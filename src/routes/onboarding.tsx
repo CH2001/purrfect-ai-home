@@ -17,6 +17,8 @@ export const Route = createFileRoute("/onboarding")({
       { name: "description", content: "Tell Mimi, your AI adoption companion, about your home, routine and current pets." },
       { property: "og:title", content: "Chat with Mimi — Purrfect Home" },
       { property: "og:description", content: "Describe your home and routine in your own words." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Onboarding,

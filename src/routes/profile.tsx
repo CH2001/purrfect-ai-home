@@ -11,6 +11,8 @@ export const Route = createFileRoute("/profile")({
       { name: "description", content: "Manage your account, check-in reminders, notifications and privacy." },
       { property: "og:title", content: "Your profile — Purrfect Home" },
       { property: "og:description", content: "Manage reminders, notifications and privacy." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Profile,

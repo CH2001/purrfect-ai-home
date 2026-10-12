@@ -16,6 +16,8 @@ export const Route = createFileRoute("/discover")({
       { name: "description", content: "Swipe through approved rescue cats and dogs and save your favourites." },
       { property: "og:title", content: "Discover rescue pets — Purrfect Home" },
       { property: "og:description", content: "Swipe through approved rescue cats and dogs." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Discover,

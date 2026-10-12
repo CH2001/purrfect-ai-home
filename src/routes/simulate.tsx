@@ -11,6 +11,8 @@ export const Route = createFileRoute("/simulate")({
       { name: "description", content: "Resume an in-progress seven-day home trial or start a new one." },
       { property: "og:title", content: "Your virtual trials — Purrfect Home" },
       { property: "og:description", content: "Resume or start a seven-day home trial." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Simulate,

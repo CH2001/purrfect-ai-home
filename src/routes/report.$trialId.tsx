@@ -15,6 +15,8 @@ export const Route = createFileRoute("/report/$trialId")({
       { name: "description", content: "Your qualified readiness report from a simulated seven-day home trial." },
       { property: "og:title", content: "Readiness report — Purrfect Home" },
       { property: "og:description", content: "A qualified readiness report from a simulated home trial." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ReportPage,

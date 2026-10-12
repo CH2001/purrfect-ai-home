@@ -13,6 +13,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Continue your virtual trial, discover rescue pets and keep your household profile up to date." },
       { property: "og:title", content: "Purrfect Home — Your adoption companion" },
       { property: "og:description", content: "Continue your virtual trial and discover adoptable rescue pets." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Index,

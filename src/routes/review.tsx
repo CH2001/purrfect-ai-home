@@ -17,6 +17,8 @@ export const Route = createFileRoute("/review")({
       { name: "description", content: "Keep your household profile accurate with a quick periodic check-in." },
       { property: "og:title", content: "Profile check-in — Purrfect Home" },
       { property: "og:description", content: "A quick periodic check-in for your household profile." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Review,

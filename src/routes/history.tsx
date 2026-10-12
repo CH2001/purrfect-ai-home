@@ -5,6 +5,7 @@ import { AppShell, Chip, PageHeader, Pips, SectionTitle, btn } from "@/component
 import { ANIMALS, ANIMAL_IMAGES } from "@/lib/data/seed";
 import { useAppState } from "@/lib/repo/store";
 import { cn } from "@/lib/utils";
+import { useFeatureTransition } from "@/components/app/feature-transition";
 
 export const Route = createFileRoute("/history")({
   head: () => ({
@@ -13,6 +14,8 @@ export const Route = createFileRoute("/history")({
       { name: "description", content: "Your saved pets, readiness reports and past virtual adoption trials." },
       { property: "og:title", content: "Adoption history — Purrfect Home" },
       { property: "og:description", content: "Saved pets, readiness reports and past trials." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: History,
@@ -21,6 +24,7 @@ export const Route = createFileRoute("/history")({
 const PAGE = 10; // GCP: Firestore query trials where ownerUid==uid orderBy createdAt desc limit(PAGE) + startAfter cursor
 
 function History() {
+  const { run } = useFeatureTransition();
   const [tab, setTab] = useState<"COMPLETED" | "IN_PROGRESS">("COMPLETED");
   const [limit, setLimit] = useState(PAGE);
   const trials = useAppState((s) => s.trials);
@@ -34,7 +38,7 @@ function History() {
       <PageHeader title="Adoption History" subtitle="Your saved reports and past trials" />
       <div className="grid grid-cols-2 rounded-full bg-card p-1 shadow-soft">
         {(["COMPLETED", "IN_PROGRESS"] as const).map((k) => (
-          <button key={k} onClick={() => setTab(k)} className={cn("flex min-h-10 items-center justify-center gap-1.5 rounded-full text-sm font-semibold", tab === k ? "bg-primary text-primary-foreground" : "text-muted-foreground")}>
+          <button key={k} onClick={() => { if (tab !== k) run(() => setTab(k)); }} className={cn("flex min-h-10 items-center justify-center gap-1.5 rounded-full text-sm font-semibold", tab === k ? "bg-primary text-primary-foreground" : "text-muted-foreground")}>
             {k === "COMPLETED" ? <CheckCircle2 className="size-4" /> : <Clock className="size-4" />}{k === "COMPLETED" ? "Completed" : "In Progress"}
           </button>
         ))}
