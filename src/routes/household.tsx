@@ -15,6 +15,8 @@ export const Route = createFileRoute("/household")({
       { name: "description", content: "Edit your weekly routine, home environment and existing pets." },
       { property: "og:title", content: "Your household — Purrfect Home" },
       { property: "og:description", content: "Your weekly routine, home and current pets." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: HouseholdPage,

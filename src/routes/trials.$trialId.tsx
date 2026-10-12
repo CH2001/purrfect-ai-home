@@ -12,6 +12,9 @@ import { cn } from "@/lib/utils";
 import room from "@/assets/room.jpg";
 import catSprite from "@/assets/sprite-cat.png";
 import dogSprite from "@/assets/sprite-dog.png";
+import { PetSoundToggle, usePetSound } from "@/components/app/pet-sound";
+import { useFeatureTransition } from "@/components/app/feature-transition";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/trials/$trialId")({
   head: () => ({
@@ -20,6 +23,8 @@ export const Route = createFileRoute("/trials/$trialId")({
       { name: "description", content: "Care for your rescue companion through a simulated seven-day home trial." },
       { property: "og:title", content: "Seven-day home trial — Purrfect Home" },
       { property: "og:description", content: "A simulated seven-day home trial with a rescue pet." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: TrialPage,
@@ -66,6 +71,8 @@ function useAutonomousCat(trial: Trial | undefined, forced: Spot | null) {
 }
 
 function TrialPage() {
+  const { play } = usePetSound();
+  const { run } = useFeatureTransition();
   const { trialId } = Route.useParams();
   const trial = useAppState((s) => s.trials.find((t) => t.trialId === trialId));
   const [scenarioOpen, setScenarioOpen] = useState(false);
@@ -83,13 +90,15 @@ function TrialPage() {
   }
   const a = trial.snapshot.animal;
   const pet = trial.snapshot.household.pets[0];
-  const sc = scenarioFor(trial)!;
+  const sc = scenarioFor(trial);
+  if (!sc) return <AppShell><p className="p-8 text-center">This trial moment isn't available.</p></AppShell>;
   const s = trial.state;
 
   const doAction = (id: ActionId, target: Spot) => {
     const r = applyCareAction(trial, id, `${trial.trialId}:${trial.day}:${trial.stateVersion}:${id}`);
     if (!r.ok) { toast(r.reason); return; }
     upsertTrial(r.trial);
+    play(a);
     setForced(target); setHeart((h) => h + 1);
     clearTimeout(forceTimer.current);
     forceTimer.current = setTimeout(() => setForced(null), 3500);
@@ -119,6 +128,7 @@ function TrialPage() {
     <AppShell nav={false}>
       <div className="flex items-center justify-between">
         <Link to="/" aria-label="Back" className="grid size-10 place-items-center rounded-full bg-card shadow-soft"><ChevronLeft className="size-5" /></Link>
+        <PetSoundToggle />
         <div className="text-right"><span className="rounded-full bg-accent px-3 py-1 text-sm font-bold text-accent-foreground">Day {trial.day} of 7</span><div className="mt-1.5 w-28"><Pips value={trial.day - 1} total={7} /></div></div>
       </div>
 
@@ -143,20 +153,20 @@ function TrialPage() {
         {pet && (
           <div className="absolute bottom-[6%] left-[4%] flex flex-col items-center">
             <span className="mb-1 rounded-full bg-card/95 px-2 py-0.5 text-[10px] font-bold">{pet.name} · separated</span>
-            <img src={dogSprite} alt={`${pet.name}, resident ${pet.species.toLowerCase()}`} className={cn("w-20", trial.day === 4 && "animate-bob")} width={816} height={816} />
+            <Button variant="ghost" onClick={() => play(pet)} aria-label={`Hear ${pet.name}`} title={`Hear ${pet.name}`} className="h-auto p-0 hover:bg-transparent"><img src={pet.species === "CAT" ? catSprite : dogSprite} alt={`${pet.name}, resident ${pet.species.toLowerCase()}`} className={cn("w-20", trial.day === 4 && "animate-bob")} width={816} height={816} /></Button>
           </div>
         )}
         {pet && <div className="pointer-events-none absolute bottom-0 left-[28%] h-[30%] border-l-4 border-dashed border-card/80" aria-hidden />}
         <div className="absolute transition-all duration-[1600ms] ease-in-out" style={{ left: `${cat.x}%`, top: `${cat.y}%`, transform: "translate(-50%,-80%)" }}>
           {heart > 0 && <Heart key={heart} className="animate-pop absolute -top-5 left-1/2 size-6 -translate-x-1/2 fill-accent text-accent" />}
-          <img src={catSprite} alt={`${a.name} — ${cat.label}`} className={cn("w-20 drop-shadow-lg", spot === "box" && "scale-75 opacity-80")} width={816} height={816} />
+          <Button variant="ghost" onClick={() => play(a)} aria-label={`Hear ${a.name}`} title={`Hear ${a.name}`} className="h-auto p-0 hover:bg-transparent"><img src={a.species === "CAT" ? catSprite : dogSprite} alt={`${a.name} — ${cat.label}`} className={cn("w-20 drop-shadow-lg", spot === "box" && "scale-75 opacity-80")} width={816} height={816} /></Button>
           <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-card/95 px-2 py-0.5 text-[10px] font-bold">{cat.label}</span>
         </div>
         {tray.map((t) => (
           <button key={t.id} onClick={() => doAction(t.id, t.spot)} aria-label={`${t.label} at ${SPOTS[t.spot].label}`}
             className="absolute size-8 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-card bg-accent/80 text-xs shadow-soft" style={{ left: `${SPOTS[t.spot].x + 5}%`, top: `${SPOTS[t.spot].y - 6}%` }}><t.Icon className="mx-auto size-4 text-accent-foreground" /></button>
         ))}
-        <button onClick={() => setScenarioOpen(true)} className="glass absolute inset-x-3 bottom-3 flex items-center justify-between rounded-2xl p-3 text-left shadow-soft">
+        <button onClick={() => run(() => setScenarioOpen(true))} className="glass absolute inset-x-3 bottom-3 flex items-center justify-between rounded-2xl p-3 text-left shadow-soft">
           <span><span className="block text-[10px] font-bold uppercase text-accent">Today's moment</span><span className="font-display font-semibold">{sc.title}</span></span>
           <span className={btn.primary + " min-h-9 px-4 text-sm"}>Open</span>
         </button>
@@ -177,8 +187,10 @@ function TrialPage() {
 }
 
 function ScenarioSheet({ trial, busy, onClose, onChoose }: { trial: Trial; busy: boolean; onClose: () => void; onChoose: (id: ActionId) => void }) {
-  const sc = scenarioFor(trial)!;
-  const [sel, setSel] = useState<ActionId>(sc.recommendedActionIds[0]);
+  const sc = scenarioFor(trial);
+  const [sel, setSel] = useState<ActionId>(sc?.recommendedActionIds[0] ?? "OBSERVE");
+  const { run } = useFeatureTransition();
+  if (!sc) return null;
   const options: ActionId[] = [...sc.allowedActionIds, ...sc.prohibitedActionIds];
   const eff = previewEffects(trial, sel);
   return (
@@ -218,7 +230,7 @@ function ScenarioSheet({ trial, busy, onClose, onChoose }: { trial: Trial; busy:
             <p className="flex justify-between">Familiarity <b className="text-info">{eff.familiarity >= 0 ? "+" : ""}{eff.familiarity}</b></p>
           </div>
         </div>
-        <button className={btn.primary + " mt-4 w-full"} disabled={busy} onClick={() => onChoose(sel)}>
+        <button className={btn.primary + " mt-4 w-full"} disabled={busy} onClick={() => run(() => onChoose(sel))}>
           {busy ? <Loader2 className="size-4 animate-spin" /> : null}Confirm & end day {trial.day}
         </button>
         <p className="mt-2 text-center text-[11px] text-muted-foreground">Simulated rehearsal — not a prediction of real behaviour.</p>
