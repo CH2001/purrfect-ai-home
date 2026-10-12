@@ -12,7 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as HouseholdRouteImport } from './routes/household'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as ReviewRouteImport } from './routes/review'
 import { Route as SimulateRouteImport } from './routes/simulate'
 import { Route as AnimalsAnimalIdRouteImport } from './routes/animals.$animalId'
 import { Route as ReportTrialIdRouteImport } from './routes/report.$trialId'
@@ -33,9 +36,24 @@ const HistoryRoute = HistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HouseholdRoute = HouseholdRouteImport.update({
+  id: '/household',
+  path: '/household',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReviewRoute = ReviewRouteImport.update({
+  id: '/review',
+  path: '/review',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SimulateRoute = SimulateRouteImport.update({
@@ -63,7 +81,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/discover': typeof DiscoverRoute
   '/history': typeof HistoryRoute
+  '/household': typeof HouseholdRoute
   '/onboarding': typeof OnboardingRoute
+  '/profile': typeof ProfileRoute
+  '/review': typeof ReviewRoute
   '/simulate': typeof SimulateRoute
   '/animals/$animalId': typeof AnimalsAnimalIdRoute
   '/report/$trialId': typeof ReportTrialIdRoute
@@ -73,7 +94,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/discover': typeof DiscoverRoute
   '/history': typeof HistoryRoute
+  '/household': typeof HouseholdRoute
   '/onboarding': typeof OnboardingRoute
+  '/profile': typeof ProfileRoute
+  '/review': typeof ReviewRoute
   '/simulate': typeof SimulateRoute
   '/animals/$animalId': typeof AnimalsAnimalIdRoute
   '/report/$trialId': typeof ReportTrialIdRoute
@@ -84,7 +108,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/discover': typeof DiscoverRoute
   '/history': typeof HistoryRoute
+  '/household': typeof HouseholdRoute
   '/onboarding': typeof OnboardingRoute
+  '/profile': typeof ProfileRoute
+  '/review': typeof ReviewRoute
   '/simulate': typeof SimulateRoute
   '/animals/$animalId': typeof AnimalsAnimalIdRoute
   '/report/$trialId': typeof ReportTrialIdRoute
@@ -96,7 +123,10 @@ export interface FileRouteTypes {
     | '/'
     | '/discover'
     | '/history'
+    | '/household'
     | '/onboarding'
+    | '/profile'
+    | '/review'
     | '/simulate'
     | '/animals/$animalId'
     | '/report/$trialId'
@@ -106,7 +136,10 @@ export interface FileRouteTypes {
     | '/'
     | '/discover'
     | '/history'
+    | '/household'
     | '/onboarding'
+    | '/profile'
+    | '/review'
     | '/simulate'
     | '/animals/$animalId'
     | '/report/$trialId'
@@ -116,7 +149,10 @@ export interface FileRouteTypes {
     | '/'
     | '/discover'
     | '/history'
+    | '/household'
     | '/onboarding'
+    | '/profile'
+    | '/review'
     | '/simulate'
     | '/animals/$animalId'
     | '/report/$trialId'
@@ -127,7 +163,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DiscoverRoute: typeof DiscoverRoute
   HistoryRoute: typeof HistoryRoute
+  HouseholdRoute: typeof HouseholdRoute
   OnboardingRoute: typeof OnboardingRoute
+  ProfileRoute: typeof ProfileRoute
+  ReviewRoute: typeof ReviewRoute
   SimulateRoute: typeof SimulateRoute
   AnimalsAnimalIdRoute: typeof AnimalsAnimalIdRoute
   ReportTrialIdRoute: typeof ReportTrialIdRoute
@@ -157,11 +196,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/household': {
+      id: '/household'
+      path: '/household'
+      fullPath: '/household'
+      preLoaderRoute: typeof HouseholdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/review': {
+      id: '/review'
+      path: '/review'
+      fullPath: '/review'
+      preLoaderRoute: typeof ReviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/simulate': {
@@ -199,7 +259,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DiscoverRoute: DiscoverRoute,
   HistoryRoute: HistoryRoute,
+  HouseholdRoute: HouseholdRoute,
   OnboardingRoute: OnboardingRoute,
+  ProfileRoute: ProfileRoute,
+  ReviewRoute: ReviewRoute,
   SimulateRoute: SimulateRoute,
   AnimalsAnimalIdRoute: AnimalsAnimalIdRoute,
   ReportTrialIdRoute: ReportTrialIdRoute,
