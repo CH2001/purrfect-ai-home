@@ -1,4 +1,4 @@
 # Tasks
-- [ ] Add species/age-aware pet sounds and mute control.
-- [ ] Add blended GIF loading transitions lasting 2–3 seconds.
-- [ ] Verify feature switching and trial care interactions.
+- [x] Add species/age-aware pet sounds and mute control.
+- [x] Add blended GIF loading transitions lasting 2–3 seconds.
+- [x] Verify feature switching and trial care interactions.
