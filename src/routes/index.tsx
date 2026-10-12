@@ -80,7 +80,7 @@ function Index() {
         ) : (
           <>
             <Chip tone="success">Start a virtual trial</Chip>
-            <h2 className="mt-2 text-2xl font-semibold">Rehearse 7 days at home</h2>
+            <h2 className="relative z-10 mt-2 max-w-[60%] text-2xl font-semibold">Rehearse 7 days at home</h2>
             <p className="mt-1 max-w-[60%] text-sm text-muted-foreground">Pick a rescue pet and practise care, routines and gentle introductions.</p>
             <Link to="/discover" className={btn.primary + " mt-4"}>Find a companion <ArrowRight className="size-4" /></Link>
             <img src={ANIMAL_IMAGES.cat_oyen} alt="" className="absolute -right-6 bottom-0 top-0 h-full w-1/2 object-cover [mask-image:linear-gradient(to_right,transparent,black_30%)]" />

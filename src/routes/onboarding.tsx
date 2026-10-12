@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Send, Pencil, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell, PageHeader, ProvBadge, btn } from "@/components/app/shell";
-import { extractHousehold } from "@/server/ai.functions";
+import { extractHousehold } from "@/lib/ai/ai.functions";
 import { mockExtractHousehold, type ExtractionResult } from "@/lib/ai/mock-llm";
 import { activeHousehold, getState, saveHouseholdVersion } from "@/lib/repo/store";
 import type { HouseholdVersion } from "@/lib/domain/types";

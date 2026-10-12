@@ -114,7 +114,7 @@ export function mockExtractChanges(message: string, current: HouseholdVersion): 
 
 export function mockNarrate(input: { animalName: string; strengths: string[]; risks: string[]; stress: number; trust: number }) {
   const mood = input.stress < 50 ? "settled noticeably" : "is still adjusting";
-  return `Over this simulated week, ${input.animalName} ${mood} in your home. ${input.strengths[0] ?? "You took a careful approach."} ${input.risks.length ? `Worth preparing: ${input.risks[0].toLowerCase()}` : "No major care gaps appeared in this rehearsal."} Remember: this is an educational rehearsal, not a prediction of real behaviour.`;
+  return `Over this simulated week, ${input.animalName} ${mood} in your home. ${input.strengths[0] ?? "You took a careful approach."} ${input.risks.length ? `Worth preparing: ${input.risks[0]}` : "No major care gaps appeared in this rehearsal."} Remember: this is an educational rehearsal, not a prediction of real behaviour.`;
 }
 
 export function mockChatReply(message: string) {

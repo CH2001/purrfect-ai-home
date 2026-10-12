@@ -27,7 +27,7 @@ function Profile() {
     //               await api("/users/me/push-tokens", { method: "POST", body: JSON.stringify({ token }) });
     if (!push && typeof Notification !== "undefined") {
       const p = await Notification.requestPermission();
-      if (p !== "granted") return toast("Notifications weren't allowed — in-app reminders still work.");
+      if (p !== "granted") { toast("Notifications weren't allowed — in-app reminders still work."); return; }
     }
     setState((s) => ({ ...s, review: { ...s.review, pushEnabled: !s.review.pushEnabled } }));
   };

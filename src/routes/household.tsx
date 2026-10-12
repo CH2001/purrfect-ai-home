@@ -59,7 +59,7 @@ function HouseholdPage() {
 
   const save = () => {
     const res = saveHouseholdVersion(h, "MANUAL_EDIT", getState().householdVersions.find((v) => v.versionId === getState().activeVersionId)!.revision);
-    if (!res.ok) return toast.error(res.reason);
+    if (!res.ok) { toast.error(res.reason); return; }
     toast.success(`Saved as profile ${res.version!.versionId}. Past reports keep their original snapshot.`);
     nav({ to: "/" });
   };

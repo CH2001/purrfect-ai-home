@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, ChevronLeft, Heart, Lightbulb, BarChart3, AlertTriangle, Loader2 } from "lucide-react";
+import { Utensils, Feather, Box, Binoculars, ChevronDown, ChevronLeft, Heart, Lightbulb, BarChart3, AlertTriangle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell, Pips, btn } from "@/components/app/shell";
 import { ACTION_COPY, ANIMAL_IMAGES } from "@/lib/data/seed";
@@ -75,7 +75,7 @@ function TrialPage() {
   const [statsOpen, setStatsOpen] = useState(true);
   const nav = useNavigate();
   const spot = useAutonomousCat(trial, forced);
-  const forceTimer = useRef<ReturnType<typeof setTimeout>>();
+  const forceTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   if (!trial) return <AppShell nav={false}><p className="p-8 text-center text-muted-foreground">Loading trial…</p></AppShell>;
   if (trial.status === "COMPLETED") {
@@ -108,11 +108,11 @@ function TrialPage() {
   };
 
   const cat = SPOTS[spot];
-  const tray: { id: ActionId; label: string; spot: Spot; tone: string; emoji: string }[] = [
-    { id: "FEED", label: "Food", spot: "bowl", tone: "bg-success-soft", emoji: "🍲" },
-    { id: "PLAY", label: "Play", spot: "toy", tone: "bg-peach", emoji: "🪶" },
-    { id: "ADD_RETREAT", label: "Retreat", spot: "box", tone: "bg-warning-soft", emoji: "📦" },
-    { id: "OBSERVE", label: "Observe", spot: "rug", tone: "bg-info-soft", emoji: "🔭" },
+  const tray: { id: ActionId; label: string; spot: Spot; tone: string; Icon: typeof Box }[] = [
+    { id: "FEED", label: "Food", spot: "bowl", tone: "bg-success-soft", Icon: Utensils },
+    { id: "PLAY", label: "Play", spot: "toy", tone: "bg-peach", Icon: Feather },
+    { id: "ADD_RETREAT", label: "Retreat", spot: "box", tone: "bg-warning-soft", Icon: Box },
+    { id: "OBSERVE", label: "Observe", spot: "rug", tone: "bg-info-soft", Icon: Binoculars },
   ];
 
   return (
@@ -149,12 +149,12 @@ function TrialPage() {
         {pet && <div className="pointer-events-none absolute bottom-0 left-[28%] h-[30%] border-l-4 border-dashed border-card/80" aria-hidden />}
         <div className="absolute transition-all duration-[1600ms] ease-in-out" style={{ left: `${cat.x}%`, top: `${cat.y}%`, transform: "translate(-50%,-80%)" }}>
           {heart > 0 && <Heart key={heart} className="animate-pop absolute -top-5 left-1/2 size-6 -translate-x-1/2 fill-accent text-accent" />}
-          <img src={catSprite} alt={`${a.name} — ${cat.label}`} className={cn("w-16 drop-shadow-lg", spot === "box" && "scale-75 opacity-80")} width={816} height={816} />
+          <img src={catSprite} alt={`${a.name} — ${cat.label}`} className={cn("w-20 drop-shadow-lg", spot === "box" && "scale-75 opacity-80")} width={816} height={816} />
           <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-card/95 px-2 py-0.5 text-[10px] font-bold">{cat.label}</span>
         </div>
         {tray.map((t) => (
           <button key={t.id} onClick={() => doAction(t.id, t.spot)} aria-label={`${t.label} at ${SPOTS[t.spot].label}`}
-            className="absolute size-8 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-card bg-accent/80 text-xs shadow-soft" style={{ left: `${SPOTS[t.spot].x + 5}%`, top: `${SPOTS[t.spot].y - 6}%` }}>{t.emoji}</button>
+            className="absolute size-8 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-card bg-accent/80 text-xs shadow-soft" style={{ left: `${SPOTS[t.spot].x + 5}%`, top: `${SPOTS[t.spot].y - 6}%` }}><t.Icon className="mx-auto size-4 text-accent-foreground" /></button>
         ))}
         <button onClick={() => setScenarioOpen(true)} className="glass absolute inset-x-3 bottom-3 flex items-center justify-between rounded-2xl p-3 text-left shadow-soft">
           <span><span className="block text-[10px] font-bold uppercase text-accent">Today's moment</span><span className="font-display font-semibold">{sc.title}</span></span>
@@ -165,7 +165,7 @@ function TrialPage() {
       <div className="card-soft mt-3 grid grid-cols-4 gap-2 p-2">
         {tray.map((t) => (
           <button key={t.id} onClick={() => doAction(t.id, t.spot)} className="flex flex-col items-center gap-1 text-xs font-bold">
-            <span className={cn("grid size-14 place-items-center rounded-2xl text-2xl", t.tone)}>{t.emoji}</span>{t.label}
+            <span className={cn("grid size-14 place-items-center rounded-2xl text-2xl", t.tone)}><t.Icon className="size-6 text-primary" /></span>{t.label}
           </button>
         ))}
       </div>
