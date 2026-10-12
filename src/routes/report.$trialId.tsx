@@ -64,7 +64,7 @@ function ReportPage() {
           return (
             <div key={d.key} className="card-soft p-3">
               <p className="font-display font-semibold">{d.label}</p>
-              <p className={`text-xs font-bold text-${tone}`}>{l}</p>
+              <p className={{ success: "text-success", warning: "text-warning", info: "text-info", lilac: "text-lilac" }[tone] + " text-xs font-bold"}>{l}</p>
               <div className="mt-2"><Pips value={d.score} tone={tone === "lilac" ? "info" : tone} /></div>
               <p className="mt-1 text-[10px] text-muted-foreground">{d.evidence.length} evidence events</p>
             </div>

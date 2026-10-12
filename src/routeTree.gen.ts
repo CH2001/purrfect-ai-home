@@ -13,6 +13,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as SimulateRouteImport } from './routes/simulate'
 import { Route as AnimalsAnimalIdRouteImport } from './routes/animals.$animalId'
+import { Route as ReportTrialIdRouteImport } from './routes/report.$trialId'
+import { Route as TrialsTrialIdRouteImport } from './routes/trials.$trialId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,18 +36,32 @@ const AnimalsAnimalIdRoute = AnimalsAnimalIdRouteImport.update({
   path: '/animals/$animalId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReportTrialIdRoute = ReportTrialIdRouteImport.update({
+  id: '/report/$trialId',
+  path: '/report/$trialId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrialsTrialIdRoute = TrialsTrialIdRouteImport.update({
+  id: '/trials/$trialId',
+  path: '/trials/$trialId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/discover': typeof DiscoverRoute
   '/simulate': typeof SimulateRoute
   '/animals/$animalId': typeof AnimalsAnimalIdRoute
+  '/report/$trialId': typeof ReportTrialIdRoute
+  '/trials/$trialId': typeof TrialsTrialIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/discover': typeof DiscoverRoute
   '/simulate': typeof SimulateRoute
   '/animals/$animalId': typeof AnimalsAnimalIdRoute
+  '/report/$trialId': typeof ReportTrialIdRoute
+  '/trials/$trialId': typeof TrialsTrialIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +69,34 @@ export interface FileRoutesById {
   '/discover': typeof DiscoverRoute
   '/simulate': typeof SimulateRoute
   '/animals/$animalId': typeof AnimalsAnimalIdRoute
+  '/report/$trialId': typeof ReportTrialIdRoute
+  '/trials/$trialId': typeof TrialsTrialIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/discover' | '/simulate' | '/animals/$animalId'
+  fullPaths:
+    | '/'
+    | '/discover'
+    | '/simulate'
+    | '/animals/$animalId'
+    | '/report/$trialId'
+    | '/trials/$trialId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/discover' | '/simulate' | '/animals/$animalId'
-  id: '__root__' | '/' | '/discover' | '/simulate' | '/animals/$animalId'
+  to:
+    | '/'
+    | '/discover'
+    | '/simulate'
+    | '/animals/$animalId'
+    | '/report/$trialId'
+    | '/trials/$trialId'
+  id:
+    | '__root__'
+    | '/'
+    | '/discover'
+    | '/simulate'
+    | '/animals/$animalId'
+    | '/report/$trialId'
+    | '/trials/$trialId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +104,8 @@ export interface RootRouteChildren {
   DiscoverRoute: typeof DiscoverRoute
   SimulateRoute: typeof SimulateRoute
   AnimalsAnimalIdRoute: typeof AnimalsAnimalIdRoute
+  ReportTrialIdRoute: typeof ReportTrialIdRoute
+  TrialsTrialIdRoute: typeof TrialsTrialIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +138,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnimalsAnimalIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/report/$trialId': {
+      id: '/report/$trialId'
+      path: '/report/$trialId'
+      fullPath: '/report/$trialId'
+      preLoaderRoute: typeof ReportTrialIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trials/$trialId': {
+      id: '/trials/$trialId'
+      path: '/trials/$trialId'
+      fullPath: '/trials/$trialId'
+      preLoaderRoute: typeof TrialsTrialIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +160,8 @@ const rootRouteChildren: RootRouteChildren = {
   DiscoverRoute: DiscoverRoute,
   SimulateRoute: SimulateRoute,
   AnimalsAnimalIdRoute: AnimalsAnimalIdRoute,
+  ReportTrialIdRoute: ReportTrialIdRoute,
+  TrialsTrialIdRoute: TrialsTrialIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
