@@ -5,6 +5,9 @@ import { ANIMALS, ANIMAL_IMAGES } from "@/lib/data/seed";
 import { toggleFavorite, useAppState } from "@/lib/repo/store";
 import { startTrialFor } from "./discover";
 import { cn } from "@/lib/utils";
+import { PetSoundToggle, usePetSound } from "@/components/app/pet-sound";
+import { Button } from "@/components/ui/button";
+import { Volume2 } from "lucide-react";
 
 export const Route = createFileRoute("/animals/$animalId")({
   loader: ({ params }) => {
@@ -19,6 +22,8 @@ export const Route = createFileRoute("/animals/$animalId")({
       { name: "description", content: loaderData?.description ?? "Rescue pet profile" },
       { property: "og:title", content: `Meet ${loaderData?.name} — Purrfect Home` },
       { property: "og:description", content: loaderData?.description ?? "Rescue pet profile" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: AnimalPage,
@@ -27,6 +32,7 @@ export const Route = createFileRoute("/animals/$animalId")({
 const label = (k: string) => k.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase());
 
 function AnimalPage() {
+  const { play } = usePetSound();
   const a = Route.useLoaderData();
   const fav = useAppState((s) => s.favorites.includes(a.animalId));
   const nav = useNavigate();
@@ -35,6 +41,8 @@ function AnimalPage() {
       <PageHeader title={a.name} subtitle={`${a.species === "CAT" ? "Cat" : "Dog"} · ${a.ageMonths} months · ${a.sex.toLowerCase()}`}
         right={<button aria-label="Save" onClick={() => toggleFavorite(a.animalId)} className="grid size-10 place-items-center rounded-full bg-card shadow-soft"><Heart className={cn("size-5 text-accent", fav && "fill-accent")} /></button>} />
       <img src={ANIMAL_IMAGES[a.animalId]} alt={a.name} className="card-soft aspect-square w-full object-cover" />
+      <div className="mt-3 flex items-center justify-between"><Button variant="outline" onClick={() => play(a)}><Volume2 />Hear {a.name}</Button><PetSoundToggle /></div>
+      <p className="mt-2 text-[10px] text-muted-foreground">Illustrative audio · age-adjusted; breed-size adjusted when known. Recordings by Dan Crosby and Amada44, <a className="underline" href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noreferrer">CC BY-SA 3.0</a>.</p>
       <div className="mt-3 flex items-center gap-2"><DemoBadge />{a.tags.map((t) => <Chip key={t}>{t}</Chip>)}</div>
       <p className="mt-3 text-sm">{a.description}</p>
 

@@ -11,6 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { FeatureTransitionProvider } from "@/components/app/feature-transition";
+import { PetSoundProvider } from "@/components/app/pet-sound";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -108,7 +109,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <FeatureTransitionProvider><Outlet /></FeatureTransitionProvider>
+      <PetSoundProvider><FeatureTransitionProvider><Outlet /></FeatureTransitionProvider></PetSoundProvider>
       <Toaster position="top-center" />
     </QueryClientProvider>
   );
