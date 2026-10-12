@@ -57,7 +57,7 @@ function Review() {
     if (!acc.length) { setMode("home"); return; }
     const patch = Object.assign({}, ...acc.map((c) => c.apply));
     const res = saveHouseholdVersion(patch, "PROFILE_REVIEW", hh.revision); // optimistic concurrency
-    if (!res.ok) return toast.error(res.reason);
+    if (!res.ok) { toast.error(res.reason); return; }
     updateReview(reviewed(), "CONFIRMED_CHANGE", { changedFields: acc.map((c) => c.label), versionId: res.version!.versionId });
     toast.success(`Profile updated to ${res.version!.versionId}. Earlier reports keep their original snapshot.`);
     setMode("home"); setChanges([]);

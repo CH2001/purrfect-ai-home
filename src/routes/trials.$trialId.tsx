@@ -75,7 +75,7 @@ function TrialPage() {
   const [statsOpen, setStatsOpen] = useState(true);
   const nav = useNavigate();
   const spot = useAutonomousCat(trial, forced);
-  const forceTimer = useRef<ReturnType<typeof setTimeout>>();
+  const forceTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   if (!trial) return <AppShell nav={false}><p className="p-8 text-center text-muted-foreground">Loading trial…</p></AppShell>;
   if (trial.status === "COMPLETED") {
