@@ -10,33 +10,167 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DiscoverRouteImport } from './routes/discover'
+import { Route as HistoryRouteImport } from './routes/history'
+import { Route as HouseholdRouteImport } from './routes/household'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as ReviewRouteImport } from './routes/review'
+import { Route as SimulateRouteImport } from './routes/simulate'
+import { Route as AnimalsAnimalIdRouteImport } from './routes/animals.$animalId'
+import { Route as ReportTrialIdRouteImport } from './routes/report.$trialId'
+import { Route as TrialsTrialIdRouteImport } from './routes/trials.$trialId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DiscoverRoute = DiscoverRouteImport.update({
+  id: '/discover',
+  path: '/discover',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HouseholdRoute = HouseholdRouteImport.update({
+  id: '/household',
+  path: '/household',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReviewRoute = ReviewRouteImport.update({
+  id: '/review',
+  path: '/review',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SimulateRoute = SimulateRouteImport.update({
+  id: '/simulate',
+  path: '/simulate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnimalsAnimalIdRoute = AnimalsAnimalIdRouteImport.update({
+  id: '/animals/$animalId',
+  path: '/animals/$animalId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportTrialIdRoute = ReportTrialIdRouteImport.update({
+  id: '/report/$trialId',
+  path: '/report/$trialId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrialsTrialIdRoute = TrialsTrialIdRouteImport.update({
+  id: '/trials/$trialId',
+  path: '/trials/$trialId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/discover': typeof DiscoverRoute
+  '/history': typeof HistoryRoute
+  '/household': typeof HouseholdRoute
+  '/onboarding': typeof OnboardingRoute
+  '/profile': typeof ProfileRoute
+  '/review': typeof ReviewRoute
+  '/simulate': typeof SimulateRoute
+  '/animals/$animalId': typeof AnimalsAnimalIdRoute
+  '/report/$trialId': typeof ReportTrialIdRoute
+  '/trials/$trialId': typeof TrialsTrialIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/discover': typeof DiscoverRoute
+  '/history': typeof HistoryRoute
+  '/household': typeof HouseholdRoute
+  '/onboarding': typeof OnboardingRoute
+  '/profile': typeof ProfileRoute
+  '/review': typeof ReviewRoute
+  '/simulate': typeof SimulateRoute
+  '/animals/$animalId': typeof AnimalsAnimalIdRoute
+  '/report/$trialId': typeof ReportTrialIdRoute
+  '/trials/$trialId': typeof TrialsTrialIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/discover': typeof DiscoverRoute
+  '/history': typeof HistoryRoute
+  '/household': typeof HouseholdRoute
+  '/onboarding': typeof OnboardingRoute
+  '/profile': typeof ProfileRoute
+  '/review': typeof ReviewRoute
+  '/simulate': typeof SimulateRoute
+  '/animals/$animalId': typeof AnimalsAnimalIdRoute
+  '/report/$trialId': typeof ReportTrialIdRoute
+  '/trials/$trialId': typeof TrialsTrialIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/discover'
+    | '/history'
+    | '/household'
+    | '/onboarding'
+    | '/profile'
+    | '/review'
+    | '/simulate'
+    | '/animals/$animalId'
+    | '/report/$trialId'
+    | '/trials/$trialId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/discover'
+    | '/history'
+    | '/household'
+    | '/onboarding'
+    | '/profile'
+    | '/review'
+    | '/simulate'
+    | '/animals/$animalId'
+    | '/report/$trialId'
+    | '/trials/$trialId'
+  id:
+    | '__root__'
+    | '/'
+    | '/discover'
+    | '/history'
+    | '/household'
+    | '/onboarding'
+    | '/profile'
+    | '/review'
+    | '/simulate'
+    | '/animals/$animalId'
+    | '/report/$trialId'
+    | '/trials/$trialId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DiscoverRoute: typeof DiscoverRoute
+  HistoryRoute: typeof HistoryRoute
+  HouseholdRoute: typeof HouseholdRoute
+  OnboardingRoute: typeof OnboardingRoute
+  ProfileRoute: typeof ProfileRoute
+  ReviewRoute: typeof ReviewRoute
+  SimulateRoute: typeof SimulateRoute
+  AnimalsAnimalIdRoute: typeof AnimalsAnimalIdRoute
+  ReportTrialIdRoute: typeof ReportTrialIdRoute
+  TrialsTrialIdRoute: typeof TrialsTrialIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +182,91 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/discover': {
+      id: '/discover'
+      path: '/discover'
+      fullPath: '/discover'
+      preLoaderRoute: typeof DiscoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/household': {
+      id: '/household'
+      path: '/household'
+      fullPath: '/household'
+      preLoaderRoute: typeof HouseholdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/review': {
+      id: '/review'
+      path: '/review'
+      fullPath: '/review'
+      preLoaderRoute: typeof ReviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/simulate': {
+      id: '/simulate'
+      path: '/simulate'
+      fullPath: '/simulate'
+      preLoaderRoute: typeof SimulateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/animals/$animalId': {
+      id: '/animals/$animalId'
+      path: '/animals/$animalId'
+      fullPath: '/animals/$animalId'
+      preLoaderRoute: typeof AnimalsAnimalIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/report/$trialId': {
+      id: '/report/$trialId'
+      path: '/report/$trialId'
+      fullPath: '/report/$trialId'
+      preLoaderRoute: typeof ReportTrialIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trials/$trialId': {
+      id: '/trials/$trialId'
+      path: '/trials/$trialId'
+      fullPath: '/trials/$trialId'
+      preLoaderRoute: typeof TrialsTrialIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DiscoverRoute: DiscoverRoute,
+  HistoryRoute: HistoryRoute,
+  HouseholdRoute: HouseholdRoute,
+  OnboardingRoute: OnboardingRoute,
+  ProfileRoute: ProfileRoute,
+  ReviewRoute: ReviewRoute,
+  SimulateRoute: SimulateRoute,
+  AnimalsAnimalIdRoute: AnimalsAnimalIdRoute,
+  ReportTrialIdRoute: ReportTrialIdRoute,
+  TrialsTrialIdRoute: TrialsTrialIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
