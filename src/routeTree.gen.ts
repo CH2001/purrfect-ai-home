@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DiscoverRouteImport } from './routes/discover'
+import { Route as HistoryRouteImport } from './routes/history'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as SimulateRouteImport } from './routes/simulate'
 import { Route as AnimalsAnimalIdRouteImport } from './routes/animals.$animalId'
 import { Route as ReportTrialIdRouteImport } from './routes/report.$trialId'
@@ -24,6 +26,16 @@ const IndexRoute = IndexRouteImport.update({
 const DiscoverRoute = DiscoverRouteImport.update({
   id: '/discover',
   path: '/discover',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SimulateRoute = SimulateRouteImport.update({
@@ -50,6 +62,8 @@ const TrialsTrialIdRoute = TrialsTrialIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/discover': typeof DiscoverRoute
+  '/history': typeof HistoryRoute
+  '/onboarding': typeof OnboardingRoute
   '/simulate': typeof SimulateRoute
   '/animals/$animalId': typeof AnimalsAnimalIdRoute
   '/report/$trialId': typeof ReportTrialIdRoute
@@ -58,6 +72,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/discover': typeof DiscoverRoute
+  '/history': typeof HistoryRoute
+  '/onboarding': typeof OnboardingRoute
   '/simulate': typeof SimulateRoute
   '/animals/$animalId': typeof AnimalsAnimalIdRoute
   '/report/$trialId': typeof ReportTrialIdRoute
@@ -67,6 +83,8 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/discover': typeof DiscoverRoute
+  '/history': typeof HistoryRoute
+  '/onboarding': typeof OnboardingRoute
   '/simulate': typeof SimulateRoute
   '/animals/$animalId': typeof AnimalsAnimalIdRoute
   '/report/$trialId': typeof ReportTrialIdRoute
@@ -77,6 +95,8 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/discover'
+    | '/history'
+    | '/onboarding'
     | '/simulate'
     | '/animals/$animalId'
     | '/report/$trialId'
@@ -85,6 +105,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/discover'
+    | '/history'
+    | '/onboarding'
     | '/simulate'
     | '/animals/$animalId'
     | '/report/$trialId'
@@ -93,6 +115,8 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/discover'
+    | '/history'
+    | '/onboarding'
     | '/simulate'
     | '/animals/$animalId'
     | '/report/$trialId'
@@ -102,6 +126,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DiscoverRoute: typeof DiscoverRoute
+  HistoryRoute: typeof HistoryRoute
+  OnboardingRoute: typeof OnboardingRoute
   SimulateRoute: typeof SimulateRoute
   AnimalsAnimalIdRoute: typeof AnimalsAnimalIdRoute
   ReportTrialIdRoute: typeof ReportTrialIdRoute
@@ -122,6 +148,20 @@ declare module '@tanstack/react-router' {
       path: '/discover'
       fullPath: '/discover'
       preLoaderRoute: typeof DiscoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/simulate': {
@@ -158,6 +198,8 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DiscoverRoute: DiscoverRoute,
+  HistoryRoute: HistoryRoute,
+  OnboardingRoute: OnboardingRoute,
   SimulateRoute: SimulateRoute,
   AnimalsAnimalIdRoute: AnimalsAnimalIdRoute,
   ReportTrialIdRoute: ReportTrialIdRoute,

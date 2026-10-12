@@ -33,6 +33,7 @@ function Onboarding() {
   const [draft, setDraft] = useState<Partial<HouseholdVersion>>({ safeRoomAvailable: null, noiseLevel: null, homeType: null });
   const [followUp, setFollowUp] = useState<ExtractionResult["followUp"]>(null);
   const [step, setStep] = useState(0);
+  const [answered, setAnswered] = useState<Set<string>>(new Set());
   const end = useRef<HTMLDivElement>(null);
   const nav = useNavigate();
   useEffect(() => { end.current?.scrollIntoView({ behavior: "smooth" }); }, [msgs, followUp]);
@@ -58,13 +59,19 @@ function Onboarding() {
     if (f === "homeType") patch.homeType = opt.toUpperCase() as HouseholdVersion["homeType"];
     if (f === "noiseLevel") patch.noiseLevel = opt.toUpperCase() as HouseholdVersion["noiseLevel"];
     if (f === "caregiver") patch.caregivers = opt === "Yes" ? [{ name: "Helper", days: ["MON", "TUE", "WED"] }] : [];
-    const merged = { ...draft, ...patch, ...(f === "safeRoomAvailable" && opt === "Not sure" ? { safeRoomAvailable: false as const } : {}) };
-    // keep "Not sure" as unknown for safe room while still advancing the question list
-    const forNext = f === "safeRoomAvailable" ? { ...merged, safeRoomAvailable: merged.safeRoomAvailable ?? false } : merged;
-    setDraft({ ...draft, ...patch });
+    const nextDraft = { ...draft, ...patch };
+    setDraft(nextDraft);
+    const done = new Set([...answered, f]);
+    setAnswered(done);
     setMsgs((m) => [...m, { role: "user", text: opt, at: now() }]);
-    const next = mockExtractHousehold("", forNext).followUp;
-    setFollowUp(next && next.field !== f ? next : null);
+    // Pretend answered fields are known so the next prioritized question is asked ("Not sure" stays null/unknown)
+    const probe: Partial<HouseholdVersion> = { ...nextDraft,
+      ...(done.has("safeRoomAvailable") ? { safeRoomAvailable: nextDraft.safeRoomAvailable ?? false } : {}),
+      ...(done.has("homeType") ? { homeType: nextDraft.homeType ?? "APARTMENT" } : {}),
+      ...(done.has("noiseLevel") ? { noiseLevel: nextDraft.noiseLevel ?? "MODERATE" } : {}),
+      ...(done.has("caregiver") ? { caregivers: [{ name: "-", days: [] }] } : {}) };
+    const next = mockExtractHousehold("", probe).followUp;
+    setFollowUp(next);
     if (!next) { setStep(1); setMsgs((m) => [...m, { role: "mimi", at: now(), text: "That's everything I need for now! Review your profile below and confirm when it looks right." }]); }
   };
 
