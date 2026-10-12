@@ -1,6 +1,6 @@
 import type { Trial } from "@/lib/domain/types";
 import { buildReport } from "@/lib/sim/report";
-import { narrateReport } from "@/server/ai.functions";
+import { narrateReport } from "@/lib/ai/ai.functions";
 import { mockNarrate } from "@/lib/ai/mock-llm";
 
 /** Generate the grounded report; falls back to scripted narration if the LLM fails (FR-014). */
