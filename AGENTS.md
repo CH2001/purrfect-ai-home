@@ -15,3 +15,4 @@
 - AI calls go only through server functions in `src/lib/ai/ai.functions.ts` (currently mock LLM); Gemini/Vertex wiring is documented there in comments. LLM output never mutates authoritative state.
 - Simulation is a pure deterministic engine (`src/lib/sim/engine.ts`, xorshift32 seed) so trials replay identically; the production authority is the Cloud Run service, the client copy is preview only.
 - Trials pin an immutable household/animal snapshot; household edits always create a new version, never rewrite old reports.
+- Feature loading delays live in one root presentation provider; navigation and in-page feature switches share it without changing repository or simulation authority.

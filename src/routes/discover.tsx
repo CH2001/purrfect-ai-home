@@ -7,6 +7,7 @@ import { ANIMALS, ANIMAL_IMAGES } from "@/lib/data/seed";
 import { activeHousehold, getState, setState, toggleFavorite, upsertTrial, useAppState } from "@/lib/repo/store";
 import { createTrial } from "@/lib/sim/engine";
 import { cn } from "@/lib/utils";
+import { useFeatureTransition } from "@/components/app/feature-transition";
 
 export const Route = createFileRoute("/discover")({
   head: () => ({
@@ -32,6 +33,7 @@ export function startTrialFor(animalId: string) {
 }
 
 function Discover() {
+  const { run } = useFeatureTransition();
   const [filter, setFilter] = useState<"CAT" | "DOG" | "ALL">("CAT");
   const [idx, setIdx] = useState(0);
   const favorites = useAppState((s) => s.favorites);
@@ -54,7 +56,7 @@ function Discover() {
 
       <div className="mt-4 grid grid-cols-3 rounded-full bg-card p-1 shadow-soft" role="tablist">
         {([["CAT", "Cats", Cat], ["DOG", "Dogs", Dog], ["ALL", "Mixed", PawPrint]] as const).map(([k, l, I]) => (
-          <button key={k} role="tab" aria-selected={filter === k} onClick={() => { setFilter(k); setIdx(0); }}
+          <button key={k} role="tab" aria-selected={filter === k} onClick={() => { if (filter !== k) run(() => { setFilter(k); setIdx(0); }); }}
             className={cn("flex min-h-10 items-center justify-center gap-1.5 rounded-full text-sm font-semibold", filter === k ? "bg-primary text-primary-foreground" : "text-muted-foreground")}>
             <I className="size-4" />{l}
           </button>
