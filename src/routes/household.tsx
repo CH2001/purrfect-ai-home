@@ -6,6 +6,7 @@ import { AppShell, PageHeader, ProvBadge, btn } from "@/components/app/shell";
 import { activeHousehold, getState, saveHouseholdVersion, useAppState } from "@/lib/repo/store";
 import { DAYS, type Day, type HouseholdVersion, type ResidentPet, type ScheduleType } from "@/lib/domain/types";
 import { cn } from "@/lib/utils";
+import catImg from "@/assets/sprite-cat.png";
 import dogImg from "@/assets/sprite-dog.png";
 
 export const Route = createFileRoute("/household")({
@@ -106,10 +107,11 @@ function HouseholdPage() {
         <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-peach"><PawPrint className="size-5 text-accent" /></span><div><h2 className="font-semibold">Existing Pet</h2><p className="text-xs text-muted-foreground">Tell us about your current pet(s).</p></div></div>
         {h.pets.map((p, i) => (
           <div key={p.petId} className="mt-3 flex gap-3">
-            <div className="w-24 shrink-0 rounded-2xl bg-peach p-1"><img src={dogImg} alt="" className="w-full" width={816} height={816} /></div>
+            <div className="w-24 shrink-0 rounded-2xl bg-peach p-1"><img src={p.species === "DOG" ? dogImg : catImg} alt="" className="w-full" width={816} height={816} /></div>
             <div className="flex-1 space-y-2 text-xs">
               <div className="flex items-center justify-between"><input value={p.name} onChange={(e) => setPet(i, { name: e.target.value })} className="w-24 bg-transparent font-display text-lg font-semibold outline-none" aria-label="Pet name" /><button aria-label="Remove pet" onClick={() => setH({ ...h, pets: h.pets.filter((_, j) => j !== i) })} className="grid size-8 place-items-center rounded-full bg-danger-soft"><Trash2 className="size-4 text-destructive" /></button></div>
-              <p className="text-muted-foreground">{p.species === "DOG" ? "Dog" : "Cat"}{p.breed ? ` · ${p.breed}` : ""}</p>
+              <div><p className="mb-0.5 font-semibold">Species</p><Segmented value={p.species} options={[["CAT", "Cat"], ["DOG", "Dog"]]} onChange={(v) => setPet(i, { species: v })} /></div>
+              <p className="text-muted-foreground">{p.breed ? `${p.breed}` : "Mixed"}</p>
               <div><p className="mb-0.5 font-semibold">Energy level</p><Segmented value={p.energy} options={[["LOW", "Low"], ["MEDIUM", "Medium"], ["HIGH", "High"]]} onChange={(v) => setPet(i, { energy: v })} /></div>
               <div><p className="mb-0.5 font-semibold">Reacts to cats</p><Segmented value={p.reactsToCats} options={[["IGNORES", "Ignores"], ["CURIOUS", "Curious"], ["BARKS", "Barks"], ["CHASES", "Chases"]]} onChange={(v) => setPet(i, { reactsToCats: v })} /></div>
               <div><p className="mb-0.5 flex items-center gap-1 font-semibold">Cat cohabitation {p.catCohabitation === "UNKNOWN" && <ProvBadge p="UNKNOWN" />}</p><Segmented value={p.catCohabitation} options={[["GOOD", "Good"], ["UNSURE", "Unsure"], ["NOT_SUITABLE", "Not suitable"], ["UNKNOWN", "Unknown"]]} onChange={(v) => setPet(i, { catCohabitation: v })} /></div>
