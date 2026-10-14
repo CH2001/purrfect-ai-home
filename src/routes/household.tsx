@@ -57,6 +57,7 @@ function HouseholdPage() {
     setH({ ...h, weeklySchedule: [...blocks, { days: [d], start: cur.start === "00:00" ? "09:00" : cur.start, end: cur.end === "23:59" ? "18:00" : cur.end, type }] });
   };
   const setPet = (i: number, p: Partial<ResidentPet>) => setH({ ...h, pets: h.pets.map((x, j) => (j === i ? { ...x, ...p } : x)) });
+  const addPet = (species: ResidentPet["species"]) => setH({ ...h, pets: [...h.pets, { petId: `pet_${Date.now()}`, name: "New pet", species, ageMonths: null, energy: null, sociability: null, reactsToCats: null, catCohabitation: "UNKNOWN", observedBehaviors: [] }] });
   const awayDays = DAYS.filter((d) => dayType(h, d).type === "WORK_AWAY");
   const longAbsence = awayDays.length >= 3 && h.caregivers.length === 0;
 
@@ -118,8 +119,10 @@ function HouseholdPage() {
             </div>
           </div>
         ))}
-        <button onClick={() => setH({ ...h, pets: [...h.pets, { petId: `pet_${Date.now()}`, name: "New pet", species: "DOG", ageMonths: null, energy: null, sociability: null, reactsToCats: null, catCohabitation: "UNKNOWN", observedBehaviors: [] }] })}
-          className="mt-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border text-sm font-semibold"><Plus className="size-4" />Add Another Pet</button>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <button onClick={() => addPet("CAT")} className="flex min-h-11 items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border text-sm font-semibold"><Plus className="size-4" />Add a Cat</button>
+          <button onClick={() => addPet("DOG")} className="flex min-h-11 items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border text-sm font-semibold"><Plus className="size-4" />Add a Dog</button>
+        </div>
       </section>
 
       <button className={btn.primary + " mt-4 w-full"} onClick={save}>Save Household Profile →</button>
