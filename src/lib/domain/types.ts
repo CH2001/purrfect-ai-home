@@ -114,6 +114,23 @@ export interface TrialReport {
   generatedAt: string;
 }
 
+export type DayPhase = "MORNING" | "MIDDAY" | "EVENING" | "NIGHT";
+
+export interface BehaviorLogEntry {
+  day: number;
+  at: string; // simulated clock "HH:MM"
+  phase: DayPhase;
+  kind: "VOCAL" | "FEEDING" | "BEHAVIOR" | "LONELINESS" | "ATTENTION" | "MISSED" | "REST";
+  text: string;
+}
+
+export interface DayLog {
+  day: number;
+  entries: BehaviorLogEntry[];
+  experienced: string[]; // what the pet experienced that day
+  missed: string[]; // what the owner missed
+}
+
 export interface Trial {
   trialId: string;
   animalId: string;
@@ -130,6 +147,7 @@ export interface Trial {
   stateVersion: number;
   events: TrialEvent[];
   decisions: Record<number, ActionId>;
+  dayLogs?: DayLog[]; // day & night life log, one per completed day
   report?: TrialReport;
   createdAt: string;
   completedAt?: string;
