@@ -156,6 +156,13 @@
 @utility animate-pop {
   animation: pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
