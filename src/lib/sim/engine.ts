@@ -6,17 +6,11 @@
 // Coefficients are illustrative game values, NOT validated behavioural measurements.
 import type { ActionId, Animal, DynamicState, HouseholdVersion, Trial, TrialEvent } from "@/lib/domain/types";
 import { RULES, SCENARIOS } from "@/lib/data/seed";
+import { rand } from "@/lib/sim/prng";
+import { simulateDayLife } from "@/lib/sim/daylife";
 
-// ---- xorshift32 PRNG (seedAlgorithm in behavior_rules.json) ----
-export function xorshift32(state: number): number {
-  let x = state | 0 || 0x9e3779b9;
-  x ^= x << 13; x ^= x >>> 17; x ^= x << 5;
-  return x >>> 0;
-}
-export function rand(state: number): [number, number] {
-  const next = xorshift32(state);
-  return [next / 0xffffffff, next];
-}
+// ---- xorshift32 PRNG (seedAlgorithm in behavior_rules.json) — shared via prng.ts ----
+export { xorshift32, rand } from "@/lib/sim/prng";
 
 const clamp = (v: number) => Math.max(0, Math.min(100, v));
 const uid = (p: string) => `${p}_${Math.random().toString(36).slice(2, 10)}`;
@@ -128,6 +122,10 @@ export function commitDay(trial: Trial, actionId: ActionId, expectedDay: number)
     if (r > 0.6) s = applyDeltas(s, { humanTrust: 0.35, curiosity: 0.2 });
     if (i % 16 === 0) s = applyDeltas(s, { energy: 8 }); // rest periods
   }
+  // 5. day & night life log (deterministic — same seed replays the same day)
+  const life = simulateDayLife(trial, actionId, rng);
+  rng = life.rng;
+
   const done: TrialEvent = { eventId: uid("ev"), day: trial.day, kind: "DAY_COMPLETE", code: `DAY_${trial.day}_COMPLETE`, label: `Day ${trial.day} complete`, provenance: "SIMULATED", after: s, at: now };
   events.push(done);
 
@@ -136,6 +134,7 @@ export function commitDay(trial: Trial, actionId: ActionId, expectedDay: number)
   const next: Trial = {
     ...trial, state: s, rngState: rng, relationship: rel, day: nextDay, freeActionsToday: RULES.freeActionsPerDay,
     stateVersion: trial.stateVersion + 1, events: [...trial.events, ...events], decisions: { ...trial.decisions, [trial.day]: actionId },
+    dayLogs: [...(trial.dayLogs ?? []), life.log],
     status: finished ? "COMPLETED" : "IN_PROGRESS", completedAt: finished ? now : undefined,
   };
   return { ok: true, trial: next, event: decision };

@@ -1,13 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Utensils, Feather, Box, Binoculars, ChevronDown, ChevronLeft, Heart, Lightbulb, BarChart3, AlertTriangle, Loader2 } from "lucide-react";
+import { Utensils, Feather, Box, Binoculars, ChevronDown, ChevronLeft, Heart, Lightbulb, BarChart3, AlertTriangle, Loader2, ScrollText, Sun, CloudSun, Sunset, Moon, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell, Pips, btn } from "@/components/app/shell";
-import { ACTION_COPY, ANIMAL_IMAGES } from "@/lib/data/seed";
+import { ACTION_COPY, ANIMAL_IMAGES, RULES } from "@/lib/data/seed";
 import { applyCareAction, commitDay, moodLabel, previewEffects, scenarioFor } from "@/lib/sim/engine";
 import { finalizeTrial } from "@/lib/sim/finalize";
+import { liveDayEntries, phaseOf } from "@/lib/sim/daylife";
 import { upsertTrial, useAppState } from "@/lib/repo/store";
-import type { ActionId, Trial } from "@/lib/domain/types";
+import type { ActionId, BehaviorLogEntry, DayLog, DayPhase, Trial } from "@/lib/domain/types";
 import { cn } from "@/lib/utils";
 import room from "@/assets/room.jpg";
 import catSprite from "@/assets/real-cat.png";
@@ -58,13 +59,17 @@ function useAutonomousCat(trial: Trial | undefined, forced: Spot | null) {
         toy: s.curiosity * 0.4,
         window: 25,
       };
-      const entries = Object.entries(u).map(([k, v]) => [k, Math.max(1, v + Math.random() * 25)] as const);
-      const total = entries.reduce((a, [, v]) => a + v, 0);
-      let r = Math.random() * total;
-      for (const [k, v] of entries) { r -= v; if (r <= 0) { setSpot(k as Spot); return; } }
+      // Behaviour changes are gradual: the current spot gets a strong staying bias.
+      setSpot((cur) => {
+        const entries = Object.entries(u).map(([k, v]) => [k, Math.max(1, v + Math.random() * 25 + (k === cur ? 70 : 0))] as const);
+        const total = entries.reduce((a, [, v]) => a + v, 0);
+        let r = Math.random() * total;
+        for (const [k, v] of entries) { r -= v; if (r <= 0) return k as Spot; }
+        return cur;
+      });
     };
     pick();
-    const id = setInterval(() => { if (!document.hidden) pick(); }, 3200);
+    const id = setInterval(() => { if (!document.hidden) pick(); }, 9000);
     return () => clearInterval(id);
   }, [trial?.stateVersion, forced]); // eslint-disable-line react-hooks/exhaustive-deps
   return spot;
@@ -80,6 +85,7 @@ function TrialPage() {
   const [heart, setHeart] = useState(0);
   const [busy, setBusy] = useState(false);
   const [statsOpen, setStatsOpen] = useState(true);
+  const [recap, setRecap] = useState<DayLog | null>(null);
   const nav = useNavigate();
   const spot = useAutonomousCat(trial, forced);
   const forceTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -113,7 +119,7 @@ function TrialPage() {
     if (next.status === "COMPLETED") { next = await finalizeTrial(next); upsertTrial(next); nav({ to: "/report/$trialId", params: { trialId } }); return; }
     upsertTrial(next);
     setScenarioOpen(false); setBusy(false);
-    toast.success(`Day ${trial.day} complete — on to day ${next.day}`);
+    setRecap(next.dayLogs?.[next.dayLogs.length - 1] ?? null);
   };
 
   const cat = SPOTS[spot];
@@ -172,6 +178,8 @@ function TrialPage() {
         </button>
       </section>
 
+      <DayNightPane trial={trial} />
+
       <div className="card-soft mt-3 grid grid-cols-4 gap-2 p-2">
         {tray.map((t) => (
           <button key={t.id} onClick={() => doAction(t.id, t.spot)} className="flex flex-col items-center gap-1 text-xs font-bold">
@@ -182,7 +190,96 @@ function TrialPage() {
       <p className="mt-2 text-center text-xs text-muted-foreground">{trial.freeActionsToday} care actions left today</p>
 
       {scenarioOpen && <ScenarioSheet trial={trial} busy={busy} onClose={() => setScenarioOpen(false)} onChoose={choose} />}
+      {recap && <DayRecapSheet log={recap} name={a.name} onClose={() => setRecap(null)} />}
     </AppShell>
+  );
+}
+
+const PHASE_META: Record<DayPhase, { label: string; Icon: typeof Sun }> = {
+  MORNING: { label: "Morning", Icon: Sun },
+  MIDDAY: { label: "Midday", Icon: CloudSun },
+  EVENING: { label: "Evening", Icon: Sunset },
+  NIGHT: { label: "Night", Icon: Moon },
+};
+
+const KIND_DOT: Record<BehaviorLogEntry["kind"], string> = {
+  VOCAL: "bg-info", FEEDING: "bg-success", BEHAVIOR: "bg-primary", LONELINESS: "bg-warning", ATTENTION: "bg-success", MISSED: "bg-destructive", REST: "bg-muted-foreground",
+};
+
+function LogRow({ e }: { e: BehaviorLogEntry }) {
+  return (
+    <li className="flex items-start gap-2 text-xs">
+      <span className="w-9 shrink-0 pt-0.5 font-bold text-muted-foreground">{e.at}</span>
+      <span className={cn("mt-1.5 size-1.5 shrink-0 rounded-full", KIND_DOT[e.kind])} aria-hidden />
+      <span className={cn(e.kind === "MISSED" && "font-semibold text-destructive", e.kind === "LONELINESS" && "font-semibold text-warning")}>{e.text}</span>
+    </li>
+  );
+}
+
+/** Day & night simulation pane: live log for today plus full logs of completed days. */
+function DayNightPane({ trial }: { trial: Trial }) {
+  const used = RULES.freeActionsPerDay - trial.freeActionsToday;
+  const approxMins = [8 * 60, 12 * 60, 16 * 60, 19 * 60, 22 * 60][Math.min(used, 4)];
+  const phase = phaseOf(approxMins);
+  const { label, Icon } = PHASE_META[phase];
+  const past = [...(trial.dayLogs ?? [])].reverse();
+  return (
+    <section className="card-soft mt-3 p-3" aria-label="Day and night simulation log">
+      <div className="flex items-center justify-between">
+        <p className="flex items-center gap-1.5 font-display font-semibold"><ScrollText className="size-4 text-primary" /> Day & night</p>
+        <span className="flex items-center gap-1 rounded-full bg-info-soft px-2 py-0.5 text-[10px] font-bold"><Icon className="size-3" /> {label}</span>
+      </div>
+      <ul className="mt-2 space-y-1.5">
+        {liveDayEntries(trial).map((e, i) => <LogRow key={i} e={e} />)}
+      </ul>
+      {past.length > 0 && (
+        <details className="mt-2">
+          <summary className="cursor-pointer text-xs font-bold text-muted-foreground">Previous days ({past.length})</summary>
+          {past.map((l) => (
+            <div key={l.day} className="mt-2 border-t border-border pt-2">
+              <p className="text-xs font-bold">Day {l.day}</p>
+              <ul className="mt-1 space-y-1.5">{l.entries.map((e, i) => <LogRow key={i} e={e} />)}</ul>
+            </div>
+          ))}
+        </details>
+      )}
+      <p className="mt-2 text-[10px] text-muted-foreground">Simulated daily rhythm — illustrative, not a behavioural measurement.</p>
+    </section>
+  );
+}
+
+/** Recap shown after each committed day: what the pet experienced and what the owner missed. */
+function DayRecapSheet({ log, name, onClose }: { log: DayLog; name: string; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-40 flex items-end justify-center bg-foreground/40" role="dialog" aria-modal aria-label={`Day ${log.day} recap`} onClick={onClose}>
+      <div className="max-h-[92vh] w-full max-w-[440px] overflow-y-auto rounded-t-3xl bg-background p-4" onClick={(e) => e.stopPropagation()}>
+        <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-border" />
+        <span className="rounded-full bg-peach px-2 py-0.5 text-[10px] font-bold uppercase text-accent">🌙 Day {log.day} recap</span>
+        <h2 className="mt-2 font-display text-2xl font-semibold">How {name}'s day went</h2>
+        <div className="card-soft mt-3 p-3">
+          <p className="font-display text-sm font-semibold">What {name} experienced</p>
+          <ul className="mt-1.5 space-y-1.5">
+            {log.experienced.map((t, i) => (
+              <li key={i} className="flex items-start gap-2 text-xs"><CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-success" />{t}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="card-soft mt-2 p-3">
+          <p className="font-display text-sm font-semibold">What you missed</p>
+          {log.missed.length === 0 ? (
+            <p className="mt-1.5 flex items-center gap-2 text-xs"><CheckCircle2 className="size-3.5 text-success" /> Nothing — a well-covered day.</p>
+          ) : (
+            <ul className="mt-1.5 space-y-1.5">
+              {log.missed.map((t, i) => (
+                <li key={i} className="flex items-start gap-2 text-xs"><AlertTriangle className="mt-0.5 size-3.5 shrink-0 text-warning" />{t}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <button className={btn.primary + " mt-4 w-full"} onClick={onClose}>Continue to day {log.day + 1}</button>
+        <p className="mt-2 text-center text-[11px] text-muted-foreground">Simulated rehearsal — not a prediction of real behaviour.</p>
+      </div>
+    </div>
   );
 }
 
