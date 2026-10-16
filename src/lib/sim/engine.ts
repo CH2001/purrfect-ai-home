@@ -57,7 +57,6 @@ export function applyCareAction(trial: Trial, actionId: ActionId, idempotencyKey
   if (trial.events.some((e) => e.idempotencyKey === idempotencyKey)) return { ok: false, reason: "Duplicate request ignored.", trial };
   if (trial.status !== "IN_PROGRESS") return { ok: false, reason: "This trial is complete.", trial };
   if (actionId === "FORCE_DIRECT_MEETING") return { ok: false, reason: "Direct contact is locked — introductions stay gradual (DO_NOT_FORCE_DIRECT_CONTACT).", trial };
-  if (trial.freeActionsToday <= 0) return { ok: false, reason: "That's enough care for today — continue to the day's moment.", trial };
   const rule = RULES.actions[actionId];
   const missing = rule.requiredResources.filter((r) => !trial.snapshot.household.resources.includes(r));
   if (missing.length) return { ok: false, reason: `Missing resource: ${missing.join(", ").toLowerCase().replace(/_/g, " ")}.`, trial };
@@ -65,7 +64,7 @@ export function applyCareAction(trial: Trial, actionId: ActionId, idempotencyKey
   let after = applyDeltas(before, rule.deltas);
   if (actionId === "OBSERVE") after = applyDeltas(after, { humanTrust: 1, curiosity: 1 });
   const event: TrialEvent = { eventId: uid("ev"), day: trial.day, kind: "ACTION", code: actionId, label: actionId, provenance: "SIMULATED", before, after, idempotencyKey, at: new Date().toISOString() };
-  return { ok: true, event, trial: { ...trial, state: after, freeActionsToday: trial.freeActionsToday - 1, stateVersion: trial.stateVersion + 1, events: [...trial.events, event] } };
+  return { ok: true, event, trial: { ...trial, state: after, stateVersion: trial.stateVersion + 1, events: [...trial.events, event] } };
 }
 
 export function previewEffects(trial: Trial, actionId: ActionId) {
