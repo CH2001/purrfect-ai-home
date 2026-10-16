@@ -91,7 +91,7 @@ function Index() {
       </section>
 
       <SectionTitle title="Discover adoptable pets" action={<Link to="/discover" className="text-sm font-bold text-accent">See all ›</Link>} />
-      <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-2">
+      <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-2 no-scrollbar">
         {ANIMALS.map((a) => (
           <Link key={a.animalId} to="/animals/$animalId" params={{ animalId: a.animalId }} className="card-soft w-36 shrink-0 snap-start overflow-hidden">
             <img src={ANIMAL_IMAGES[a.animalId]} alt={a.name} className="aspect-square w-full object-cover" loading="lazy" />
