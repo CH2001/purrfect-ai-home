@@ -13,10 +13,24 @@ export const ANIMAL_IMAGES: Record<string, string> = {
   cat_oyen: oyen, cat_luna: luna, cat_mochi: mochi, dog_bumi: bumi, dog_milo: milo, dog_suri: suri,
 };
 
-// Presentation-only directory for demo listings. Production provider information
-// comes from the shelter/rescuer directory keyed by Animal.shelterId.
-export const ADOPTION_PROVIDERS: Record<string, { name: string; type: "Shelter" | "Individual rescuer" }> = {
-  demo_shelter_1: { name: "Demo rescue shelter", type: "Shelter" },
+// Presentation-only SAMPLE directory. Production provider information comes from
+// the shelter/rescuer directory keyed by Animal.shelterId (Firestore via the Cloud
+// Run API). Every name, location and contact detail below is sample data; the UI
+// labels them clearly as fictional so they never read as real adoption offers.
+export type AdoptionProvider = {
+  name: string;
+  type: "Shelter" | "Individual rescuer";
+  location: string;
+  email: string;
+  phone: string;
+};
+
+export const ADOPTION_PROVIDERS: Record<string, AdoptionProvider> = {
+  shelter_pawsitive_hope: { name: "Pawsitive Hope Animal Shelter", type: "Shelter", location: "Petaling Jaya, Selangor", email: "adopt@pawsitivehope.example.org", phone: "+60 3-7931 0248" },
+  shelter_whisker_haven: { name: "Whisker Haven Cat Rescue", type: "Shelter", location: "Bangsar, Kuala Lumpur", email: "hello@whiskerhaven.example.org", phone: "+60 3-2282 4117" },
+  shelter_second_chance: { name: "Second Chance Paws Rescue", type: "Shelter", location: "Shah Alam, Selangor", email: "team@secondchancepaws.example.org", phone: "+60 3-5510 9364" },
+  shelter_taman_harapan: { name: "Taman Harapan Animal Sanctuary", type: "Shelter", location: "Cyberjaya, Selangor", email: "adoptions@tamanharapan.example.org", phone: "+60 3-8322 7740" },
+  rescuer_aunty_mei: { name: "Aunty Mei · Independent rescuer", type: "Individual rescuer", location: "Klang, Selangor", email: "auntymei.rescues@example.org", phone: "+60 12-638 2057" },
 };
 
 const t = (value: number | null) =>
@@ -24,38 +38,38 @@ const t = (value: number | null) =>
     ? { value, source: "UNKNOWN" as const, isSynthetic: false }
     : { value, source: "DEMO_SYNTHETIC" as const, isSynthetic: true };
 
-const base = { shelterId: "demo_shelter_1", status: "APPROVED" as const, isDemo: true,
+const base = { status: "APPROVED" as const, isDemo: true,
   healthInfo: { vaccinationStatus: "UNKNOWN", sterilizationStatus: "UNKNOWN", vetReviewRequired: true } };
 
 export const ANIMALS: Animal[] = [
-  { ...base, animalId: "cat_oyen", name: "Oyen", species: "CAT", ageMonths: 8, sex: "MALE",
+  { ...base, animalId: "cat_oyen", shelterId: "rescuer_aunty_mei", name: "Oyen", species: "CAT", ageMonths: 8, sex: "MALE",
     description: "A curious rescue cat learning that home can be a happy place again. Loves window-watching, soft blankets and gentle company.",
     tags: ["Cautious", "Curious", "Gentle"],
     baselineTraits: { confidence: t(30), activityLevel: t(65), noiseSensitivity: t(80), socialApproach: t(35), dogReactivity: t(null), catReactivity: t(null), separationSensitivity: t(null) },
     verifiedObservations: [
       { code: "HIDES_FROM_STRANGERS", context: "Fictional foster-room demonstration", source: "DEMO_SYNTHETIC" },
       { code: "EXPLORES_AFTER_QUIET_TIME", context: "Fictional quiet room", source: "DEMO_SYNTHETIC" }] },
-  { ...base, animalId: "cat_luna", name: "Luna", species: "CAT", ageMonths: 24, sex: "FEMALE",
+  { ...base, animalId: "cat_luna", shelterId: "shelter_whisker_haven", name: "Luna", species: "CAT", ageMonths: 24, sex: "FEMALE",
     description: "Gentle, reserved companion with limited inter-pet history. Prefers calm evenings.",
     tags: ["Calm", "Gentle"],
     baselineTraits: { confidence: t(48), activityLevel: t(35), noiseSensitivity: t(55), socialApproach: t(40), dogReactivity: t(null), catReactivity: t(40) },
     verifiedObservations: [{ code: "OBSERVES_BEFORE_APPROACH", context: "Fictional adoption room", source: "DEMO_SYNTHETIC" }] },
-  { ...base, animalId: "cat_mochi", name: "Mochi", species: "CAT", ageMonths: 10, sex: "FEMALE",
+  { ...base, animalId: "cat_mochi", shelterId: "shelter_whisker_haven", name: "Mochi", species: "CAT", ageMonths: 10, sex: "FEMALE",
     description: "Active, playful cat who adores wand toys. Dog familiarity unknown.",
     tags: ["Playful", "Affectionate"],
     baselineTraits: { confidence: t(67), activityLevel: t(84), noiseSensitivity: t(42), socialApproach: t(61), dogReactivity: t(null), catReactivity: t(55) },
     verifiedObservations: [{ code: "PLAYS_WITH_WAND", context: "Fictional play session", source: "DEMO_SYNTHETIC" }] },
-  { ...base, animalId: "dog_bumi", name: "Bumi", species: "DOG", ageMonths: 14, sex: "MALE",
+  { ...base, animalId: "dog_bumi", shelterId: "shelter_second_chance", name: "Bumi", species: "DOG", ageMonths: 14, sex: "MALE",
     description: "Young mixed-breed with an active play routine and a love of puzzle feeders.",
     tags: ["Friendly", "Loyal"],
     baselineTraits: { confidence: t(62), activityLevel: t(80), noiseSensitivity: t(48), socialApproach: t(72), catReactivity: t(null), preyDrive: t(null), separationSensitivity: t(null) },
     verifiedObservations: [{ code: "ENJOYS_PUZZLE_FEEDER", context: "Fictional kennel enrichment", source: "DEMO_SYNTHETIC" }] },
-  { ...base, animalId: "dog_milo", name: "Milo", species: "DOG", ageMonths: 30, sex: "MALE",
+  { ...base, animalId: "dog_milo", shelterId: "shelter_pawsitive_hope", name: "Milo", species: "DOG", ageMonths: 30, sex: "MALE",
     description: "Quiet, easy-going dog with an uncertain small-animal history.",
     tags: ["Calm", "Easy-going"],
     baselineTraits: { confidence: t(55), activityLevel: t(47), noiseSensitivity: t(45), socialApproach: t(51), catReactivity: t(null), preyDrive: t(null), separationSensitivity: t(35) },
     verifiedObservations: [{ code: "RESTS_AFTER_WALK", context: "Fictional walk log", source: "DEMO_SYNTHETIC" }] },
-  { ...base, animalId: "dog_suri", name: "Suri", species: "DOG", ageMonths: 36, sex: "FEMALE",
+  { ...base, animalId: "dog_suri", shelterId: "shelter_taman_harapan", name: "Suri", species: "DOG", ageMonths: 36, sex: "FEMALE",
     description: "Attentive dog with observable reactions to noise. Thrives with routine.",
     tags: ["Attentive", "Smart"],
     baselineTraits: { confidence: t(52), activityLevel: t(60), noiseSensitivity: t(72), socialApproach: t(45), catReactivity: t(null), preyDrive: t(null), separationSensitivity: t(null) },
