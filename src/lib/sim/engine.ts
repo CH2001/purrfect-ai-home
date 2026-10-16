@@ -122,6 +122,10 @@ export function commitDay(trial: Trial, actionId: ActionId, expectedDay: number)
     if (r > 0.6) s = applyDeltas(s, { humanTrust: 0.35, curiosity: 0.2 });
     if (i % 16 === 0) s = applyDeltas(s, { energy: 8 }); // rest periods
   }
+  // 5. day & night life log (deterministic — same seed replays the same day)
+  const life = simulateDayLife(trial, actionId, rng);
+  rng = life.rng;
+
   const done: TrialEvent = { eventId: uid("ev"), day: trial.day, kind: "DAY_COMPLETE", code: `DAY_${trial.day}_COMPLETE`, label: `Day ${trial.day} complete`, provenance: "SIMULATED", after: s, at: now };
   events.push(done);
 
@@ -130,6 +134,7 @@ export function commitDay(trial: Trial, actionId: ActionId, expectedDay: number)
   const next: Trial = {
     ...trial, state: s, rngState: rng, relationship: rel, day: nextDay, freeActionsToday: RULES.freeActionsPerDay,
     stateVersion: trial.stateVersion + 1, events: [...trial.events, ...events], decisions: { ...trial.decisions, [trial.day]: actionId },
+    dayLogs: [...(trial.dayLogs ?? []), life.log],
     status: finished ? "COMPLETED" : "IN_PROGRESS", completedAt: finished ? now : undefined,
   };
   return { ok: true, trial: next, event: decision };

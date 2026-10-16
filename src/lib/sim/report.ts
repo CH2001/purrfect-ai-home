@@ -24,8 +24,13 @@ export function buildReport(trial: Trial, narrative: string, modelId: string): T
     { key: "ADOPTION_READINESS", label: "Adoption readiness", status: trial.state.stress < 55 ? "PREPARED" : "NEEDS_ACTION", score: Math.round(Math.max(1, Math.min(5, (100 - trial.state.stress + trial.state.humanTrust) / 30))), evidence: play },
   ];
 
+  const missedMeals = (trial.dayLogs ?? []).reduce((n, l) => n + l.missed.filter((m) => /meal|Breakfast|Dinner/i.test(m)).length, 0);
+  const lonelyDays = (trial.dayLogs ?? []).filter((l) => l.missed.some((m) => /interaction/i.test(m))).length;
+
   const risks: TrialReport["risks"] = [];
   if (careGap) risks.push({ text: "Long office days with no care cover were simulated.", severity: "MEDIUM", mitigation: "Arrange a midday caregiver or check-in on WORK_AWAY days." });
+  if (missedMeals >= 2) risks.push({ text: `Meals were missed on ${missedMeals} occasion${missedMeals > 1 ? "s" : ""} during the trial.`, severity: "MEDIUM", mitigation: "Set feeding reminders or use a timed feeder on busy days." });
+  if (lonelyDays >= 2) risks.push({ text: `${a.name} went without interaction on ${lonelyDays} days.`, severity: "MEDIUM", mitigation: "Plan short daily play or check-in moments, especially for sociable animals." });
   missingRes.forEach((r) => risks.push({ text: `Missing resource: ${r.toLowerCase().replace(/_/g, " ")}.`, severity: "LOW", mitigation: "Add it before arrival day." }));
   if (h.safeRoomAvailable === false) risks.push({ text: "No separate room available for gradual introductions.", severity: "HIGH", mitigation: "Plan a gated or partitioned safe zone." });
   if (hasPet && (h.pets[0].catCohabitation === "UNKNOWN" || h.pets[0].catCohabitation === "UNSURE"))
