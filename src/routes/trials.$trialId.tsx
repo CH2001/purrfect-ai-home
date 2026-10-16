@@ -1,13 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Utensils, Feather, Box, Binoculars, ChevronDown, ChevronLeft, Heart, Lightbulb, BarChart3, AlertTriangle, Loader2 } from "lucide-react";
+import { Utensils, Feather, Box, Binoculars, ChevronDown, ChevronLeft, Heart, Lightbulb, BarChart3, AlertTriangle, Loader2, ScrollText, Sun, CloudSun, Sunset, Moon, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell, Pips, btn } from "@/components/app/shell";
-import { ACTION_COPY, ANIMAL_IMAGES } from "@/lib/data/seed";
+import { ACTION_COPY, ANIMAL_IMAGES, RULES } from "@/lib/data/seed";
 import { applyCareAction, commitDay, moodLabel, previewEffects, scenarioFor } from "@/lib/sim/engine";
 import { finalizeTrial } from "@/lib/sim/finalize";
+import { liveDayEntries, phaseOf } from "@/lib/sim/daylife";
 import { upsertTrial, useAppState } from "@/lib/repo/store";
-import type { ActionId, Trial } from "@/lib/domain/types";
+import type { ActionId, BehaviorLogEntry, DayLog, DayPhase, Trial } from "@/lib/domain/types";
 import { cn } from "@/lib/utils";
 import room from "@/assets/room.jpg";
 import catSprite from "@/assets/real-cat.png";
@@ -58,13 +59,17 @@ function useAutonomousCat(trial: Trial | undefined, forced: Spot | null) {
         toy: s.curiosity * 0.4,
         window: 25,
       };
-      const entries = Object.entries(u).map(([k, v]) => [k, Math.max(1, v + Math.random() * 25)] as const);
-      const total = entries.reduce((a, [, v]) => a + v, 0);
-      let r = Math.random() * total;
-      for (const [k, v] of entries) { r -= v; if (r <= 0) { setSpot(k as Spot); return; } }
+      // Behaviour changes are gradual: the current spot gets a strong staying bias.
+      setSpot((cur) => {
+        const entries = Object.entries(u).map(([k, v]) => [k, Math.max(1, v + Math.random() * 25 + (k === cur ? 70 : 0))] as const);
+        const total = entries.reduce((a, [, v]) => a + v, 0);
+        let r = Math.random() * total;
+        for (const [k, v] of entries) { r -= v; if (r <= 0) return k as Spot; }
+        return cur;
+      });
     };
     pick();
-    const id = setInterval(() => { if (!document.hidden) pick(); }, 3200);
+    const id = setInterval(() => { if (!document.hidden) pick(); }, 9000);
     return () => clearInterval(id);
   }, [trial?.stateVersion, forced]); // eslint-disable-line react-hooks/exhaustive-deps
   return spot;
