@@ -32,7 +32,7 @@ describe("simulateDayLife", () => {
   });
 
   it("captures a louder follow-up when the morning greeting gets no attention", () => {
-    const { log } = simulateDayLife(base(), "OBSERVE", 42);
+    const { log } = simulateDayLife(base(), "CONTINUE_SEPARATION", 42);
     const vocals = log.entries.filter((e) => e.kind === "VOCAL");
     expect(vocals.length).toBeGreaterThanOrEqual(2);
     expect(vocals[1].text).toMatch(/30 minutes/);
