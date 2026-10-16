@@ -56,7 +56,7 @@ export function matchHousehold(animal: Animal, home: HouseholdVersion): Househol
     }
   }
   if (uncoveredDays.size) {
-    result.cautions.push(`Arrange care for long absences on ${[...uncoveredDays].join(", ")}.");
+    result.cautions.push(`Arrange care for long absences on ${[...uncoveredDays].join(", ")}.`);
     result.priority -= 1;
   }
   if (!home.weeklySchedule.length) result.unknowns.push("Your daily care schedule is not recorded.");

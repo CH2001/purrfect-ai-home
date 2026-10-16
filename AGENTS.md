@@ -10,6 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## Architecture rules
+- Discover recommendations are a pure presentation-only criteria helper; ordering is not a compatibility probability and missing shelter facts stay unknown, so recommendations never approve adoption or alter trial authority.
 - Adoption-provider display information is keyed by animal shelterId in the seed directory; keep it presentation-only so mock contacts never change trial authority.
 - Domain contracts live in `src/lib/domain/types.ts` and mirror the spec JSON schemas — keep them in sync with the future Cloud Run Pydantic models.
 - Persistence goes only through `src/lib/repo/store.ts` (currently localStorage mock); swap it for Firebase Auth + Cloud Run `/api/v1` + Firestore without touching routes.
