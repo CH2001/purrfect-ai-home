@@ -3,8 +3,8 @@ import { ArrowRight, Bell, Briefcase, Heart, Home as HomeIcon, PawPrint, Calenda
 import { AppShell, Chip, DemoBadge, Logo, Pips, SectionTitle, btn } from "@/components/app/shell";
 import { ANIMALS, ANIMAL_IMAGES } from "@/lib/data/seed";
 import { activeHousehold, reviewDue, setState, useAppState, addMonths } from "@/lib/repo/store";
-import mimi from "@/assets/mimi.png";
-import oyenSprite from "@/assets/sprite-cat.png";
+import mimi from "@/assets/real-cat.png";
+import oyenSprite from "@/assets/real-cat.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -48,7 +48,7 @@ function Index() {
         <p className="text-lg">{greeting()},</p>
         <h1 className="flex items-center gap-2 text-3xl font-semibold">{name} <Heart className="size-5 fill-accent text-accent" /></h1>
         <p className="text-sm text-muted-foreground">Different stories. Brighter tomorrows.</p>
-        <img src={oyenSprite} alt="" className="absolute -top-6 right-0 w-28 animate-bob" width={816} height={816} />
+        <img src={oyenSprite} alt="" className="absolute -top-6 right-0 w-28 animate-bob" width={1024} height={1024} />
       </div>
 
       {due && (
@@ -94,7 +94,7 @@ function Index() {
       <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-2 no-scrollbar">
         {ANIMALS.map((a) => (
           <Link key={a.animalId} to="/animals/$animalId" params={{ animalId: a.animalId }} className="card-soft w-36 shrink-0 snap-start overflow-hidden">
-            <img src={ANIMAL_IMAGES[a.animalId]} alt={a.name} className="aspect-square w-full object-cover" loading="lazy" />
+            <img src={ANIMAL_IMAGES[a.animalId]} alt={a.name} className="aspect-square w-full object-cover" loading="lazy" width={1024} height={1024} />
             <div className="p-2.5">
               <p className="font-display font-semibold">{a.name}</p>
               <p className="text-xs text-muted-foreground">{a.species === "CAT" ? "Cat" : "Dog"} · {a.ageMonths < 12 ? `${a.ageMonths} months` : `${Math.round(a.ageMonths / 12)} yr`}</p>
