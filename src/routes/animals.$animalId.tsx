@@ -1,5 +1,5 @@
 import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
-import { Heart, Stethoscope, Home, UserRound } from "lucide-react";
+import { Heart, Stethoscope, Home, UserRound, Mail, Phone } from "lucide-react";
 import { AppShell, Chip, DemoBadge, PageHeader, Pips, ProvBadge, SectionTitle, btn } from "@/components/app/shell";
 import { ANIMALS, ANIMAL_IMAGES, ADOPTION_PROVIDERS } from "@/lib/data/seed";
 import { toggleFavorite, useAppState } from "@/lib/repo/store";
@@ -54,9 +54,16 @@ function AnimalPage() {
           <ProviderIcon className="mt-1 size-5 shrink-0 text-primary" />
           <div className="min-w-0 text-sm">
             <p className="font-bold">{provider?.name ?? "Shelter or rescuer not provided"}</p>
-            <p className="text-muted-foreground">{provider?.type ?? "Adoption provider"}{a.isDemo ? " · Demo listing" : ""}</p>
-            <p className="mt-2 text-muted-foreground">Contact details have not been provided.</p>
-            {a.isDemo && <p className="mt-1 text-xs text-muted-foreground">This is a fictional listing, not a real adoption offer.</p>}
+            <p className="text-muted-foreground">{provider?.type ?? "Adoption provider"}{provider?.location ? ` · ${provider.location}` : ""}</p>
+            {provider ? (
+              <div className="mt-2 space-y-0.5 text-muted-foreground">
+                <p className="flex items-center gap-1.5"><Mail className="size-3.5 shrink-0" /><span className="min-w-0 break-all">{provider.email}</span></p>
+                <p className="flex items-center gap-1.5"><Phone className="size-3.5 shrink-0" />{provider.phone}</p>
+              </div>
+            ) : (
+              <p className="mt-2 text-muted-foreground">Contact details have not been provided.</p>
+            )}
+            {a.isDemo && <p className="mt-1 text-xs text-muted-foreground">Sample listing — this provider and its contact details are fictional and not a real adoption offer.</p>}
           </div>
         </div>
       </section>
