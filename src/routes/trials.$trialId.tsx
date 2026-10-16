@@ -85,6 +85,7 @@ function TrialPage() {
   const [heart, setHeart] = useState(0);
   const [busy, setBusy] = useState(false);
   const [statsOpen, setStatsOpen] = useState(true);
+  const [recap, setRecap] = useState<DayLog | null>(null);
   const nav = useNavigate();
   const spot = useAutonomousCat(trial, forced);
   const forceTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -118,7 +119,7 @@ function TrialPage() {
     if (next.status === "COMPLETED") { next = await finalizeTrial(next); upsertTrial(next); nav({ to: "/report/$trialId", params: { trialId } }); return; }
     upsertTrial(next);
     setScenarioOpen(false); setBusy(false);
-    toast.success(`Day ${trial.day} complete — on to day ${next.day}`);
+    setRecap(next.dayLogs?.[next.dayLogs.length - 1] ?? null);
   };
 
   const cat = SPOTS[spot];
