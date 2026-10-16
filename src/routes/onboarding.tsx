@@ -7,7 +7,7 @@ import { extractHousehold } from "@/lib/ai/ai.functions";
 import { mockExtractHousehold, type ExtractionResult } from "@/lib/ai/mock-llm";
 import { activeHousehold, getState, saveHouseholdVersion } from "@/lib/repo/store";
 import type { HouseholdVersion } from "@/lib/domain/types";
-import mimi from "@/assets/mimi.png";
+import mimi from "@/assets/real-cat.png";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/onboarding")({

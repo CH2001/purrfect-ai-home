@@ -6,8 +6,8 @@ import { AppShell, PageHeader, ProvBadge, btn } from "@/components/app/shell";
 import { activeHousehold, getState, saveHouseholdVersion, useAppState } from "@/lib/repo/store";
 import { DAYS, type Day, type HouseholdVersion, type ResidentPet, type ScheduleType } from "@/lib/domain/types";
 import { cn } from "@/lib/utils";
-import catImg from "@/assets/sprite-cat.png";
-import dogImg from "@/assets/sprite-dog.png";
+import catImg from "@/assets/real-cat.png";
+import dogImg from "@/assets/real-dog.png";
 
 export const Route = createFileRoute("/household")({
   head: () => ({

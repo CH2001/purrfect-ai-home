@@ -8,7 +8,7 @@ import { mockExtractChanges } from "@/lib/ai/mock-llm";
 import { activeHousehold, addMonths, getState, saveHouseholdVersion, setState, useAppState } from "@/lib/repo/store";
 import type { ProposedChange, ReviewSettings } from "@/lib/domain/types";
 import { cn } from "@/lib/utils";
-import mimi from "@/assets/mimi.png";
+import mimi from "@/assets/real-cat.png";
 
 export const Route = createFileRoute("/review")({
   head: () => ({
