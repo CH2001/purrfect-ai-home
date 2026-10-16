@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { Heart, X, Home, ShieldCheck, Cat, Dog, PawPrint, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell, Chip, Logo, btn } from "@/components/app/shell";
-import { ANIMALS, ANIMAL_IMAGES } from "@/lib/data/seed";
+import { ANIMALS, ANIMAL_IMAGES, ADOPTION_PROVIDERS } from "@/lib/data/seed";
 import { activeHousehold, getState, setState, toggleFavorite, upsertTrial, useAppState } from "@/lib/repo/store";
 import { createTrial } from "@/lib/sim/engine";
 import { cn } from "@/lib/utils";
@@ -24,7 +24,8 @@ export const Route = createFileRoute("/discover")({
 });
 
 export function startTrialFor(animalId: string) {
-  const a = ANIMALS.find((x) => x.animalId === animalId)!;
+  const a = ANIMALS.find((x) => x.animalId === animalId);
+  if (!a) { toast.error("This pet listing is unavailable."); return null; }
   if (a.status !== "APPROVED") { toast.error(`${a.name} is no longer available for trials.`); return null; }
   const s = getState();
   const existing = s.trials.find((t) => t.animalId === animalId && t.status === "IN_PROGRESS");
@@ -65,13 +66,13 @@ function Discover() {
         ))}
       </div>
 
-      <div className="relative mt-5 h-[440px]">
+      <div className="relative isolate mt-5 px-6">
         {list.length > 1 && [prev, next].map((p, i) => (
-          <div key={p.animalId + i} className={cn("card-soft absolute top-6 h-[380px] w-[70%] overflow-hidden opacity-70", i === 0 ? "-left-10 -rotate-3" : "-right-10 rotate-3")}>
+          <div key={p.animalId + i} className={cn("card-soft pointer-events-none absolute top-6 bottom-6 w-[70%] overflow-hidden opacity-70", i === 0 ? "left-0 -rotate-3" : "right-0 rotate-3")}>
             <img src={ANIMAL_IMAGES[p.animalId]} alt="" className="h-2/3 w-full object-cover" />
           </div>
         ))}
-        <Link key={a.animalId} to="/animals/$animalId" params={{ animalId: a.animalId }} className="card-soft animate-pop absolute inset-x-6 top-0 z-10 overflow-hidden">
+        <Link key={a.animalId} to="/animals/$animalId" params={{ animalId: a.animalId }} className="card-soft animate-pop relative z-10 block overflow-hidden">
           <div className="relative">
             <img src={ANIMAL_IMAGES[a.animalId]} alt={a.name} className="aspect-[4/3.4] w-full object-cover" />
             <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-card/95 px-2 py-1 text-xs font-bold text-success"><ShieldCheck className="size-3.5" /> Shelter listing · Demo</span>
@@ -80,14 +81,15 @@ function Discover() {
           <div className="p-4">
             <p><span className="font-display text-2xl font-semibold">{a.name}</span> <span className="ml-2 text-sm text-muted-foreground">{a.ageMonths < 12 ? `${a.ageMonths} months old` : `${Math.round(a.ageMonths / 12)} years old`}</span></p>
             <p className="mt-1 line-clamp-3 text-sm text-muted-foreground">{a.description}</p>
+            <p className="mt-2 text-xs font-semibold text-primary">{ADOPTION_PROVIDERS[a.shelterId]?.name ?? "Adoption contact not provided"}</p>
             <div className="mt-2 flex flex-wrap gap-1.5">{a.tags.map((t, i) => <Chip key={t} tone={(["warning", "success", "danger"] as const)[i % 3]}>{t}</Chip>)}</div>
           </div>
         </Link>
       </div>
 
-      <div className="card-soft mt-2 p-3">
+      <div className="card-soft mt-4 p-3">
         <p className="flex items-center gap-2 font-display font-semibold"><Sparkles className="size-4 text-warning" /> Matched to your household</p>
-        <div className="mt-2 flex gap-4 text-xs text-muted-foreground">
+        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
           <span className="flex items-center gap-1"><Home className="size-4" /> {hh.noiseLevel === "LOW" ? "Quiet" : "Moderate"} {hh.homeType?.toLowerCase()}</span>
           {hh.pets[0] && <span className="flex items-center gap-1"><PawPrint className="size-4" /> Existing {hh.pets[0].species.toLowerCase()}</span>}
         </div>

@@ -13,6 +13,12 @@ export const ANIMAL_IMAGES: Record<string, string> = {
   cat_oyen: oyen, cat_luna: luna, cat_mochi: mochi, dog_bumi: bumi, dog_milo: milo, dog_suri: suri,
 };
 
+// Presentation-only directory for demo listings. Production provider information
+// comes from the shelter/rescuer directory keyed by Animal.shelterId.
+export const ADOPTION_PROVIDERS: Record<string, { name: string; type: "Shelter" | "Individual rescuer" }> = {
+  demo_shelter_1: { name: "Demo rescue shelter", type: "Shelter" },
+};
+
 const t = (value: number | null) =>
   value === null
     ? { value, source: "UNKNOWN" as const, isSynthetic: false }
