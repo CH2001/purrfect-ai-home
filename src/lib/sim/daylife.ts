@@ -6,7 +6,6 @@
 // this client copy is the preview engine and must replay identically from the trial seed.
 import type { ActionId, Animal, BehaviorLogEntry, DayLog, DayPhase, Trial } from "@/lib/domain/types";
 import { rand } from "@/lib/sim/prng";
-import { RULES } from "@/lib/data/seed";
 
 const DAY_START = 7 * 60; // 07:00
 const DAY_END = 23 * 60; // 23:00
@@ -172,7 +171,7 @@ export function liveDayEntries(trial: Trial): BehaviorLogEntry[] {
   const a = trial.snapshot.animal;
   const cat = a.species === "CAT";
   const day = trial.day;
-  const used = RULES.freeActionsPerDay - trial.freeActionsToday;
+  const used = trial.events.filter((e) => e.day === day && e.kind === "ACTION").length;
   const fed = trial.events.some((e) => e.day === day && e.code === "FEED");
   const entries: BehaviorLogEntry[] = [];
   const push = (mins: number, kind: BehaviorLogEntry["kind"], text: string) =>

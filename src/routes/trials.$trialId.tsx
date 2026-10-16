@@ -187,7 +187,7 @@ function TrialPage() {
           </button>
         ))}
       </div>
-      <p className="mt-2 text-center text-xs text-muted-foreground">{trial.freeActionsToday} care actions left today</p>
+      <p className="mt-2 text-center text-xs text-muted-foreground">Care for {a.name} as often as you like today</p>
 
       {scenarioOpen && <ScenarioSheet trial={trial} busy={busy} onClose={() => setScenarioOpen(false)} onChoose={choose} />}
       {recap && <DayRecapSheet log={recap} name={a.name} onClose={() => setRecap(null)} />}
@@ -218,7 +218,7 @@ function LogRow({ e }: { e: BehaviorLogEntry }) {
 
 /** Day & night simulation pane: live log for today plus full logs of completed days. */
 function DayNightPane({ trial }: { trial: Trial }) {
-  const used = RULES.freeActionsPerDay - trial.freeActionsToday;
+  const used = trial.events.filter((e) => e.day === trial.day && e.kind === "ACTION").length;
   const approxMins = [8 * 60, 12 * 60, 16 * 60, 19 * 60, 22 * 60][Math.min(used, 4)];
   const phase = phaseOf(approxMins);
   const { label, Icon } = PHASE_META[phase];
