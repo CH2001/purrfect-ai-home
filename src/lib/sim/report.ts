@@ -44,6 +44,7 @@ export function buildReport(trial: Trial, narrative: string, modelId: string): T
   if (intro.length) strengths.push({ text: "You kept introductions gradual and choice-based.", evidence: intro });
   if (caregiver.length) strengths.push({ text: "You arranged care cover for away days.", evidence: caregiver });
   if (play.length) strengths.push({ text: "You offered enrichment and routine meals.", evidence: play });
+  if (missedMeals === 0 && (trial.dayLogs ?? []).length > 0) strengths.push({ text: "You kept a reliable feeding routine every day.", evidence: play });
 
   const needs = dims.filter((x) => x.status === "NEEDS_ACTION").length;
   const summary: TrialReport["summary"] = needs === 0 ? "PREPARED" : needs <= 2 ? "NEEDS_ACTION" : "UNKNOWN";
