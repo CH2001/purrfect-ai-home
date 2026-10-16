@@ -1,7 +1,7 @@
 import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
-import { Heart, Stethoscope } from "lucide-react";
+import { Heart, Stethoscope, Home, UserRound } from "lucide-react";
 import { AppShell, Chip, DemoBadge, PageHeader, Pips, ProvBadge, SectionTitle, btn } from "@/components/app/shell";
-import { ANIMALS, ANIMAL_IMAGES } from "@/lib/data/seed";
+import { ANIMALS, ANIMAL_IMAGES, ADOPTION_PROVIDERS } from "@/lib/data/seed";
 import { toggleFavorite, useAppState } from "@/lib/repo/store";
 import { startTrialFor } from "./discover";
 import { cn } from "@/lib/utils";
@@ -34,6 +34,8 @@ const label = (k: string) => k.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c
 function AnimalPage() {
   const { play } = usePetSound();
   const a = Route.useLoaderData();
+  const provider = ADOPTION_PROVIDERS[a.shelterId];
+  const ProviderIcon = provider?.type === "Individual rescuer" ? UserRound : Home;
   const fav = useAppState((s) => s.favorites.includes(a.animalId));
   const nav = useNavigate();
   return (
@@ -45,6 +47,19 @@ function AnimalPage() {
       <p className="mt-2 text-[10px] text-muted-foreground">Illustrative audio · age-adjusted; breed-size adjusted when known. Recordings by Dan Crosby and Amada44, <a className="underline" href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noreferrer">CC BY-SA 3.0</a>.</p>
       <div className="mt-3 flex items-center gap-2"><DemoBadge />{a.tags.map((t) => <Chip key={t}>{t}</Chip>)}</div>
       <p className="mt-3 text-sm">{a.description}</p>
+
+      <section aria-label="Adoption contact" className="mt-5 border-y border-border py-4">
+        <h2 className="text-lg font-semibold">Adoption contact</h2>
+        <div className="mt-2 flex items-start gap-3">
+          <ProviderIcon className="mt-1 size-5 shrink-0 text-primary" />
+          <div className="min-w-0 text-sm">
+            <p className="font-bold">{provider?.name ?? "Shelter or rescuer not provided"}</p>
+            <p className="text-muted-foreground">{provider?.type ?? "Adoption provider"}{a.isDemo ? " · Demo listing" : ""}</p>
+            <p className="mt-2 text-muted-foreground">Contact details have not been provided.</p>
+            {a.isDemo && <p className="mt-1 text-xs text-muted-foreground">This is a fictional listing, not a real adoption offer.</p>}
+          </div>
+        </div>
+      </section>
 
       <SectionTitle title="Baseline traits" />
       <div className="card-soft divide-y divide-border">
