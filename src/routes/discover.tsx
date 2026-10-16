@@ -108,7 +108,7 @@ function Discover() {
         </Button>
         <div className="relative min-w-0">
           {list.length > 1 && <div className="card-soft pointer-events-none absolute inset-0 translate-y-1 rotate-2 overflow-hidden opacity-40"><img src={ANIMAL_IMAGES[next.animalId]} alt="" className="h-full w-full object-cover" /></div>}
-          <Link key={a.animalId} to="/animals/$animalId" params={{ animalId: a.animalId }} data-testid="swipe-card"
+          <div data-testid="swipe-card"
             className={cn("card-soft relative z-10 block touch-pan-y select-none overflow-hidden", drag === 0 && "transition-transform duration-200 motion-reduce:transition-none")}
             style={{ transform: `translateX(${drag}px) rotate(${drag / 22}deg)` }}
             onDragStart={(event) => event.preventDefault()}
@@ -137,7 +137,8 @@ function Discover() {
               else setDrag(0);
             }}
             onPointerCancel={() => { gesture.current = null; setDrag(0); suppressClick.current = true; }}
-            onClick={(event) => { if (suppressClick.current) { event.preventDefault(); suppressClick.current = false; } }}>
+            onClickCapture={(event) => { if (suppressClick.current) { event.preventDefault(); event.stopPropagation(); suppressClick.current = false; } }}>
+          <Link key={a.animalId} to="/animals/$animalId" params={{ animalId: a.animalId }} className="block" draggable={false}>
             <div className="relative">
               <img src={ANIMAL_IMAGES[a.animalId]} alt={a.name} draggable={false} className="aspect-[4/3] w-full object-cover" />
               <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-card/95 px-2 py-1 text-[10px] font-bold text-success"><ShieldCheck className="size-3" />Sample rescue listing</span>
@@ -151,6 +152,7 @@ function Discover() {
               <div className="mt-2 flex flex-wrap gap-1">{a.tags.map((tag, i) => <Chip key={tag} tone={(["warning", "success", "danger"] as const)[i % 3]}>{tag}</Chip>)}</div>
             </div>
           </Link>
+          </div>
         </div>
         <Button variant="ghost" aria-label="Pass pet — swipe right" onClick={() => decide("pass")} className={cn("h-full min-h-44 w-7 flex-col gap-3 rounded-full px-0 py-6 text-accent hover:bg-peach hover:text-accent", drag > 20 ? "bg-peach ring-2 ring-accent" : "bg-peach/60")}>
           <ArrowRight /><X /><span className="text-xs [writing-mode:vertical-rl]">Pass</span>
