@@ -7,6 +7,7 @@ import { ACTION_COPY, ANIMAL_IMAGES, RULES } from "@/lib/data/seed";
 import { applyCareAction, commitDay, moodLabel, previewEffects, scenarioFor } from "@/lib/sim/engine";
 import { finalizeTrial } from "@/lib/sim/finalize";
 import { liveDayEntries, phaseOf } from "@/lib/sim/daylife";
+import { attentionNeed } from "@/lib/sim/attention";
 import { upsertTrial, useAppState } from "@/lib/repo/store";
 import type { ActionId, BehaviorLogEntry, DayLog, DayPhase, Trial } from "@/lib/domain/types";
 import { cn } from "@/lib/utils";
@@ -89,6 +90,27 @@ function TrialPage() {
   const nav = useNavigate();
   const spot = useAutonomousCat(trial, forced);
   const forceTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const lastCare = useRef(Date.now());
+  const alerted = useRef<string | null>(null);
+  const actionRef = useRef<(id: ActionId, target: Spot) => void>(() => {});
+  useEffect(() => { lastCare.current = Date.now(); alerted.current = null; }, [trial?.stateVersion]);
+  useEffect(() => {
+    if (!trial || trial.status !== "IN_PROGRESS") return;
+    const id = setInterval(() => {
+      const need = attentionNeed(trial, (Date.now() - lastCare.current) / 1000);
+      if (!need || alerted.current === need.kind) return;
+      alerted.current = need.kind;
+      toast(need.title, {
+        description: need.body,
+        duration: 10000,
+        action: { label: need.action === "FEED" ? "Feed" : "Check in", onClick: () => actionRef.current(need.action, need.action === "FEED" ? "bowl" : "rug") },
+      });
+      if (document.hidden && typeof Notification !== "undefined" && Notification.permission === "granted") {
+        new Notification(need.title, { body: need.body });
+      }
+    }, 5000);
+    return () => clearInterval(id);
+  }, [trial?.stateVersion, trial?.status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!trial) return <AppShell nav={false}><p className="p-8 text-center text-muted-foreground">Loading trial…</p></AppShell>;
   if (trial.status === "COMPLETED") {
@@ -109,6 +131,8 @@ function TrialPage() {
     clearTimeout(forceTimer.current);
     forceTimer.current = setTimeout(() => setForced(null), 3500);
   };
+
+  actionRef.current = doAction;
 
   const choose = async (id: ActionId) => {
     if (busy) return;
