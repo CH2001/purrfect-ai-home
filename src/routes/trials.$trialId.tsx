@@ -132,6 +132,8 @@ function TrialPage() {
     forceTimer.current = setTimeout(() => setForced(null), 3500);
   };
 
+  actionRef.current = doAction;
+
   const choose = async (id: ActionId) => {
     if (busy) return;
     setBusy(true);
