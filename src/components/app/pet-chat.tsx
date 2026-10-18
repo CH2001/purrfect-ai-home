@@ -32,8 +32,11 @@ export function PetChat() {
     finally { setBusy(false); }
   }
   return <>
-    <button ref={launcher} aria-label="Ask Mimi about pets" onClick={() => setOpen(true)} className="fixed bottom-20 right-4 z-40 flex items-center gap-2 rounded-full bg-primary px-4 py-3 text-sm text-primary-foreground shadow-lg"><MessageCircle className="size-4" />Ask Mimi</button>
-    {open && <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/40 p-2 sm:items-center" onClick={() => setOpen(false)}>
+    {/* Match AppShell's centered frame, keeping the surrounding page clickable. */}
+    <div className="pointer-events-none fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] left-1/2 z-40 flex w-full max-w-[440px] -translate-x-1/2 justify-end px-4">
+      <button ref={launcher} aria-label="Ask Mimi about pets" onClick={() => setOpen(true)} className="pointer-events-auto flex items-center gap-2 rounded-full bg-primary px-4 py-3 text-sm text-primary-foreground shadow-lg"><MessageCircle className="size-4" />Ask Mimi</button>
+    </div>
+    {open && <div className="fixed inset-y-0 left-1/2 z-[80] flex w-full max-w-[440px] -translate-x-1/2 items-end justify-center bg-black/40 p-2 sm:items-center" onClick={() => setOpen(false)}>
       <div ref={panel} role="dialog" aria-modal="true" aria-label="Ask Mimi about pets" className="flex h-[85dvh] w-full max-w-md flex-col rounded-2xl bg-background shadow-xl" onClick={e => e.stopPropagation()} onKeyDown={e => {
         if (e.key === "Escape") setOpen(false);
         if (e.key === "Tab") {

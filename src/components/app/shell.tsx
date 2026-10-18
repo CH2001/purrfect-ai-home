@@ -1,4 +1,4 @@
-import { Link, useRouter } from "@tanstack/react-router";
+import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { ChevronLeft, Home, Search, PawPrint, Clock, User } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
@@ -18,30 +18,33 @@ export function Logo({ small }: { small?: boolean }) {
 }
 
 const NAV = [
-  { to: "/", label: "Home", icon: Home },
-  { to: "/discover", label: "Discover", icon: Search },
-  { to: "/simulate", label: "Simulate", icon: PawPrint },
-  { to: "/history", label: "History", icon: Clock },
-  { to: "/profile", label: "Profile", icon: User },
+  { to: "/", label: "Home", icon: Home, sections: ["/"] },
+  { to: "/discover", label: "Discover", icon: Search, sections: ["/discover", "/animals"] },
+  { to: "/simulate", label: "Simulate", icon: PawPrint, sections: ["/simulate", "/trials"] },
+  { to: "/history", label: "History", icon: Clock, sections: ["/history", "/report"] },
+  { to: "/profile", label: "Profile", icon: User, sections: ["/profile", "/household", "/review", "/onboarding"] },
 ] as const;
 
 export function AppShell({ children, nav = true }: { children: ReactNode; nav?: boolean }) {
+  const pathname = useRouterState({ select: state => state.location.pathname });
   return (
     <div className="min-h-screen bg-muted/60">
       <div className="relative mx-auto min-h-screen w-full max-w-[440px] bg-background shadow-lift">
         <main className={cn("px-4 pt-4", nav ? "pb-28" : "pb-8")}>{children}</main>
         {nav && (
-          <nav className="glass fixed bottom-0 left-1/2 z-30 w-full max-w-[440px] -translate-x-1/2 border-t border-border px-2 pb-[env(safe-area-inset-bottom)]">
+          <nav aria-label="Main navigation" className="glass fixed bottom-0 left-1/2 z-30 w-full max-w-[440px] -translate-x-1/2 border-t border-border px-2 pb-[env(safe-area-inset-bottom)]">
             <ul className="grid grid-cols-5">
-              {NAV.map(({ to, label, icon: Icon }) => (
+              {NAV.map(({ to, label, icon: Icon, sections }) => {
+                const selected = sections.some(section => pathname === section || (section !== "/" && pathname.startsWith(section + "/")));
+                return (
                 <li key={to}>
-                  <Link to={to} activeOptions={{ exact: to === "/" }}
-                    className="flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs font-semibold text-muted-foreground data-[status=active]:text-accent">
+                  <Link to={to} activeOptions={{ exact: true }} aria-current={selected ? "page" : undefined} resetScroll
+                    className={cn("flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-lg text-xs font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent", selected ? "text-accent" : "text-muted-foreground")}>
                     <Icon className="size-5" />
                     {label}
                   </Link>
                 </li>
-              ))}
+              ); })}
             </ul>
           </nav>
         )}

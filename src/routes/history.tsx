@@ -7,6 +7,7 @@ import { ANIMALS } from "@/lib/data/seed";
 import { useAppState } from "@/lib/repo/store";
 import { cn } from "@/lib/utils";
 import { useFeatureTransition } from "@/components/app/feature-transition";
+import { SampleAdoptionHistory } from "@/components/app/sample-adoption-history";
 
 export const Route = createFileRoute("/history")({
   head: () => ({
@@ -81,6 +82,8 @@ function History() {
         ))}
       </ul>
       {list.length > limit + 1 && <button className={btn.ghost + " mt-3 w-full"} onClick={() => setLimit((l) => l + PAGE)}>Load more</button>}
+
+      {tab === "COMPLETED" && <SampleAdoptionHistory />}
 
       <SectionTitle title="Saved pets" />
       <div className="flex flex-wrap gap-2">

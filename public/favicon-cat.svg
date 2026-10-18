@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Purrfect Home cat</title>
+  <rect width="64" height="64" rx="14" fill="#174e3c"/>
+  <path d="M12 33 12 12 25 22Q32 18 39 22L52 12V33Q56 53 32 55 8 53 12 33Z" fill="#f5b35c"/>
+  <path d="m16 20 7 5-7 5zm32 0-7 5 7 5z" fill="#ed846b"/>
+  <g fill="#174e3c">
+    <ellipse cx="23" cy="35" rx="3" ry="4"/>
+    <ellipse cx="41" cy="35" rx="3" ry="4"/>
+    <path d="m28 41 4 4 4-4z"/>
+  </g>
+  <g fill="none" stroke="#174e3c" stroke-width="2.3" stroke-linecap="round">
+    <path d="M32 45v3m0 0q-4 4-7 0m7 0q4 4 7 0"/>
+    <path d="m8 39 10 2M8 47l10-2m38-6-10 2m10 6-10-2"/>
+  </g>
+</svg>

@@ -12,9 +12,17 @@ During the trial, feeding, play, observation and retreat choices affect simulate
 
 ### Market size and needs
 
-Our target users are first-time adopters, households with existing pets, and shelters or independent rescuers supporting adopter education. A proposed initial pilot would work with Malaysian rescue partners, followed by expansion where local partners can supply reliable animal records.
+**Purrfect Home targets a valuable moment in the pet-care journey: helping an interested adopter become a prepared owner.** First-time adopters need to understand the commitment, households with existing pets need an introduction plan, and shelters need practical ways to prepare applicants. Our opportunity is to bring these needs together through personalised guidance and a seven-day virtual care experience, starting with Malaysian rescue partners.
 
-For international context, **5.8 million cats and dogs entered U.S. shelters and rescues in 2024**, according to Shelter Animals Count as cited in the [2025 Hill’s State of Shelter Pet Adoption Report, page 3](https://www.hillspet.com/content/dam/cp-sites-aem/hills/hills-pet/food-shelter-love/resources/pdf/shelter-report-2025.pdf). The report also identifies financial, housing and care-related barriers. This indicates the scale of the adoption-support need; it is not a Malaysian market estimate or a count of potential paying customers. Local demand, willingness to pay and a revenue-based market size remain to be validated through partner interviews and pilots.
+Evidence from ASEAN and the wider Japan and Asia-Pacific (JAPAC) region gives us three reasons to pursue this opportunity:
+
+- **A growing local pet-care economy.** Malaysia's pet-food market reached approximately **US$448.6 million in 2025**, with **7.9% compound annual growth over 2021–2025**, according to Agriculture and Agri-Food Canada, citing Euromonitor International. This shows sustained spending on everyday care. For Purrfect Home, it makes Malaysia a relevant starting market for helping prospective owners understand the routines and resources behind that commitment. [Source: AAFC, *Pet food trends in Malaysia*, 2026 / Euromonitor](https://agriculture.canada.ca/en/international-trade/reports-and-guides/sector-trend-analysis-pet-food-trends-malaysia).
+- **A substantial household audience across JAPAC.** Australia's 2025 national pet survey estimates that **7.7 million households—73% of all households—own a pet**, up from 69% in 2022. It also reports that **12% of pet owners needed financial assistance for veterinary care**. Together, these findings show how widespread pet ownership can become while highlighting the importance of realistic preparation. Our expansion hypothesis is that household-specific planning can serve both new adopters and existing owners considering another pet. [Source: Animal Medicines Australia, *Pets in Australia 2025*](https://animalmedicinesaustralia.org.au/resources/pets-in-australia-a-national-survey-of-pets-and-people-3/).
+- **A concrete welfare need in ASEAN.** SPCA Singapore reported **608 confirmed animal cruelty and welfare cases in 2025**, following 961 in 2024, with neglect, poor welfare and abandonment remaining concerns. These cases reinforce the case for testing practical care education before adoption. Purrfect Home gives users a place to practise daily decisions and identify preparation gaps to discuss with a rescuer. [Source: SPCA Singapore, February 2026 coverage](https://spca.org.sg/media-archives/).
+
+**Our route to market is a Malaysian shelter-partner pilot**, reaching adopters when they are actively considering a pet. The pilot would test whether guided preparation improves care knowledge and makes adoption conversations more useful, while measuring completion rates and staff time saved. Potential commercial models include partner subscriptions and sponsored adopter education; pricing and willingness to pay would be tested before expansion to other ASEAN and JAPAC markets.
+
+These country-level figures establish market context, not a combined regional total or an adoption-software revenue estimate: pet-food spending, household ownership and one organisation's welfare caseload measure different things. We will size our reachable market from partner adoption volumes, participating households and validated pricing, and assess adoption outcomes through partner follow-up.
 
 ### Competitors and what makes this approach different
 
@@ -78,3 +86,4 @@ See [verification notes](docs/VERIFICATION.md) for completed checks and their li
 The original interface was built with [Lovable](https://lovable.dev).
 The [upstream Lovable demo](https://purrfect-ai-home.lovable.app) is separate from this modified GCP deployment.
 The project remains connected to its [Lovable editor](https://lovable.dev/projects/a318aa07-8bd1-4651-ac7c-a41eab499757); avoid rewriting published Git history.
+
