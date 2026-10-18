@@ -1,7 +1,8 @@
+import { ANIMAL_IMAGES } from "@/lib/data/images";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Bell, Briefcase, Heart, Home as HomeIcon, PawPrint, CalendarClock, X } from "lucide-react";
 import { AppShell, Chip, DemoBadge, Logo, Pips, SectionTitle, btn } from "@/components/app/shell";
-import { ANIMALS, ANIMAL_IMAGES } from "@/lib/data/seed";
+import { ANIMALS } from "@/lib/data/seed";
 import { activeHousehold, reviewDue, setState, useAppState, addMonths } from "@/lib/repo/store";
 import mimi from "@/assets/real-cat.png";
 import oyenSprite from "@/assets/real-cat.png";
@@ -59,7 +60,7 @@ function Index() {
             <p className="text-muted-foreground">Has anything changed at home? It takes a minute.</p>
             <div className="mt-2 flex gap-2">
               <Link to="/review" className={btn.accent + " min-h-9 px-4 text-sm"}>Review now</Link>
-              <button className={btn.ghost + " min-h-9 px-4 text-sm"} onClick={() => setState((s) => ({ ...s, review: { ...s.review, snoozedUntil: addMonths(new Date().toISOString(), 0.25) } }))}>Snooze 7 days</button>
+              <button className={btn.ghost + " min-h-9 px-4 text-sm"} onClick={() => setState((s) => ({ ...s, review: { ...s.review, snoozedUntil: new Date(Date.now() + 7 * 86400000).toISOString() } }))}>Snooze 7 days</button>
             </div>
           </div>
           <button aria-label="Dismiss" onClick={() => setState((s) => ({ ...s, review: { ...s.review, dismissedForWindow: s.review.nextReviewDueAt } }))}><X className="size-4" /></button>

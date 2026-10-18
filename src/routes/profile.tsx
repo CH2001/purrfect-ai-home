@@ -1,3 +1,4 @@
+import { cloudEnabled } from "@/lib/cloud/client";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CalendarClock, Home, MessageCircle, ShieldCheck, Trash2, Bell } from "lucide-react";
 import { toast } from "sonner";
@@ -51,23 +52,24 @@ function Profile() {
         </div>
         <DemoBadge />
       </div>
-      <p className="mt-2 text-xs text-muted-foreground">Demo profile stored on this device. Sign-in arrives with the cloud backend.</p>
+      <p className="mt-2 text-xs text-muted-foreground">{cloudEnabled ? "Saved to this browser’s demo session. No login needed. Clearing browser data loses access to this session." : "Demo profile stored on this device."}</p>
 
       <SectionTitle title="Settings" />
       <ul className="card-soft divide-y divide-border">
         {rows.map(({ to, icon: I, label, hint }) => (
           <li key={to}><Link to={to} className="flex items-center gap-3 p-3"><I className="size-5 text-primary" /><span className="flex-1"><span className="block font-semibold">{label}</span><span className="text-xs text-muted-foreground">{hint}</span></span>›</Link></li>
         ))}
-        <li className="flex items-center gap-3 p-3"><Bell className="size-5 text-primary" /><span className="flex-1"><span className="block font-semibold">Web push reminders</span><span className="text-xs text-muted-foreground">Optional · never includes personal details</span></span>
+        <li className="flex items-center gap-3 p-3"><Bell className="size-5 text-primary" /><span className="flex-1"><span className="block font-semibold">Browser attention alerts</span><span className="text-xs text-muted-foreground">While this app is open · optional</span></span>
           <button role="switch" aria-checked={push} onClick={togglePush} className={"relative h-7 w-12 rounded-full transition " + (push ? "bg-success" : "bg-border")}><span className={"absolute top-1 size-5 rounded-full bg-card transition-all " + (push ? "left-6" : "left-1")} /></button></li>
       </ul>
 
       <SectionTitle title="Privacy" />
       <div className="card-soft space-y-3 p-3 text-sm">
         <p className="flex gap-2"><ShieldCheck className="size-5 shrink-0 text-success" />Your household details are only shared with a rescuer when you explicitly choose to, for a specific recipient and time.</p>
-        <button className="flex items-center gap-2 font-semibold text-destructive" onClick={() => { if (confirm("Delete all your trials, reports and household data?")) { resetAll(); toast.success("All data removed"); } }}><Trash2 className="size-4" />Delete my data</button>
+        <button className="flex items-center gap-2 font-semibold text-destructive" onClick={async () => { if (confirm("Delete all your trials, reports and household data? Your demo session will remain.")) { try { await resetAll(); toast.success("App data removed. You can start a fresh demo."); } catch { toast.error("Deletion failed. Please retry."); } } }}><Trash2 className="size-4" />Delete my data</button>
       </div>
       <p className="mt-4 text-center text-[11px] text-muted-foreground">All animals, households and scores are fictional demo data — not real behavioural predictions.</p>
+      <a href="/audio-credits.txt" className="mt-2 block text-center text-xs underline">Pet sound credits and licences</a>
     </AppShell>
   );
 }

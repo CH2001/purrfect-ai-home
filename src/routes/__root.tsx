@@ -1,3 +1,5 @@
+import { CloudSession } from "@/components/app/cloud-session";
+import { PetChat } from "@/components/app/pet-chat";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -109,7 +111,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <PetSoundProvider><FeatureTransitionProvider><Outlet /></FeatureTransitionProvider></PetSoundProvider>
+      <PetSoundProvider><FeatureTransitionProvider><CloudSession><Outlet /><PetChat /></CloudSession></FeatureTransitionProvider></PetSoundProvider>
       <Toaster position="top-center" />
     </QueryClientProvider>
   );

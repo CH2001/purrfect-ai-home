@@ -30,3 +30,24 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+**/*credentials*.json
+**/*service-account*.json
+*.pem
+*.key
+
+# Terraform state and private plans (never commit these)
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+backend.hcl
+crash.log
+coverage/

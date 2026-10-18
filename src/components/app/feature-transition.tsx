@@ -1,8 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "@tanstack/react-router";
-import loadingAsset from "@/assets/oyen-loading.gif.asset.json";
+import loadingAsset from "@/assets/oyen-loading.gif";
 
-const DURATION = 2500;
+const DURATION = 350;
 const TransitionContext = createContext({ busy: false, run: (_action: () => void) => {} });
 
 /** Presentation-only delay: navigation/state authority remains outside this provider. */
@@ -44,7 +44,7 @@ export function FeatureTransitionProvider({ children }: { children: ReactNode })
       <div inert={busy} aria-hidden={busy || undefined}>{children}</div>
       {busy && <div className="fixed inset-0 z-[100] grid place-items-center bg-background" role="status" aria-live="polite" aria-label="Loading">
         <div className="flex flex-col items-center">
-          {!reducedMotion && <img src={loadingAsset.url} alt="" className="w-80 max-w-[85vw] mix-blend-multiply" width={400} height={300} />}
+          {!reducedMotion && <img src={loadingAsset} alt="" className="w-80 max-w-[85vw] mix-blend-multiply" width={400} height={300} />}
           <p className="font-display text-lg text-primary">Just a whisker…</p>
           <span className="sr-only">Loading, please wait.</span>
         </div>

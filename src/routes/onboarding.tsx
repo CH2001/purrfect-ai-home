@@ -77,9 +77,9 @@ function Onboarding() {
     if (!next) { setStep(1); setMsgs((m) => [...m, { role: "mimi", at: now(), text: "That's everything I need for now! Review your profile below and confirm when it looks right." }]); }
   };
 
-  const confirm = () => {
+  const confirm = async () => {
     const cur = activeHousehold(getState());
-    const res = saveHouseholdVersion({ ...draft, safeRoomAvailable: draft.safeRoomAvailable ?? cur.safeRoomAvailable }, "ONBOARDING", cur.revision);
+    const res = await saveHouseholdVersion({ ...draft, safeRoomAvailable: draft.safeRoomAvailable ?? cur.safeRoomAvailable }, "ONBOARDING", cur.revision);
     if (!res.ok) { toast.error(res.reason); return; }
     toast.success(`Household profile saved as ${res.version!.versionId}`);
     nav({ to: "/discover" });

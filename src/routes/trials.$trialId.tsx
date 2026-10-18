@@ -1,14 +1,15 @@
+import { ANIMAL_IMAGES } from "@/lib/data/images";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Utensils, Feather, Box, Binoculars, ChevronDown, ChevronLeft, Heart, Lightbulb, BarChart3, AlertTriangle, Loader2, ScrollText, Sun, CloudSun, Sunset, Moon, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell, Pips, btn } from "@/components/app/shell";
-import { ACTION_COPY, ANIMAL_IMAGES, RULES } from "@/lib/data/seed";
+import { ACTION_COPY, RULES } from "@/lib/data/seed";
 import { applyCareAction, commitDay, moodLabel, previewEffects, scenarioFor } from "@/lib/sim/engine";
-import { finalizeTrial } from "@/lib/sim/finalize";
+
 import { liveDayEntries, phaseOf } from "@/lib/sim/daylife";
 import { attentionNeed } from "@/lib/sim/attention";
-import { upsertTrial, useAppState } from "@/lib/repo/store";
+import { careForTrial, advanceTrial, useAppState } from "@/lib/repo/store";
 import type { ActionId, BehaviorLogEntry, DayLog, DayPhase, Trial } from "@/lib/domain/types";
 import { cn } from "@/lib/utils";
 import room from "@/assets/room.jpg";
@@ -17,6 +18,8 @@ import dogSprite from "@/assets/real-dog.png";
 import { PetSoundToggle, usePetSound } from "@/components/app/pet-sound";
 import { useFeatureTransition } from "@/components/app/feature-transition";
 import { Button } from "@/components/ui/button";
+import { PetReaction } from "@/components/app/pet-reaction";
+import type { AttentionNeed } from "@/lib/sim/attention";
 
 export const Route = createFileRoute("/trials/$trialId")({
   head: () => ({
@@ -81,38 +84,45 @@ function TrialPage() {
   const { run } = useFeatureTransition();
   const { trialId } = Route.useParams();
   const trial = useAppState((s) => s.trials.find((t) => t.trialId === trialId));
+  const alertsEnabled = useAppState((s) => s.review.pushEnabled);
   const [scenarioOpen, setScenarioOpen] = useState(false);
   const [forced, setForced] = useState<Spot | null>(null);
   const [heart, setHeart] = useState(0);
   const [busy, setBusy] = useState(false);
   const [statsOpen, setStatsOpen] = useState(true);
   const [recap, setRecap] = useState<DayLog | null>(null);
+  const [needCard, setNeedCard] = useState<AttentionNeed | null>(null);
   const nav = useNavigate();
   const spot = useAutonomousCat(trial, forced);
   const forceTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const lastCare = useRef(Date.now());
-  const alerted = useRef<string | null>(null);
+  const alerted = useRef(0);
+  const soundRef = useRef(play);
+  soundRef.current = play;
   const actionRef = useRef<(id: ActionId, target: Spot) => void>(() => {});
-  useEffect(() => { lastCare.current = Date.now(); alerted.current = null; }, [trial?.stateVersion]);
+  useEffect(() => { lastCare.current = Date.now(); alerted.current = 0; setNeedCard(null); }, [trial?.stateVersion]);
+  useEffect(() => () => clearTimeout(forceTimer.current), []);
   useEffect(() => {
     if (!trial || trial.status !== "IN_PROGRESS") return;
     const id = setInterval(() => {
       const need = attentionNeed(trial, (Date.now() - lastCare.current) / 1000);
-      if (!need || alerted.current === need.kind) return;
-      alerted.current = need.kind;
+      if (!need || Date.now() - alerted.current < 45000) return;
+      alerted.current = Date.now();
+      setNeedCard(need);
+      soundRef.current(trial.snapshot.animal, true);
       toast(need.title, {
         description: need.body,
         duration: 10000,
         action: { label: need.action === "FEED" ? "Feed" : "Check in", onClick: () => actionRef.current(need.action, need.action === "FEED" ? "bowl" : "rug") },
       });
-      if (document.hidden && typeof Notification !== "undefined" && Notification.permission === "granted") {
+      if (alertsEnabled && document.hidden && typeof Notification !== "undefined" && Notification.permission === "granted") {
         new Notification(need.title, { body: need.body });
       }
-    }, 5000);
+    }, 2000);
     return () => clearInterval(id);
-  }, [trial?.stateVersion, trial?.status]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [trial?.stateVersion, trial?.status, alertsEnabled]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!trial) return <AppShell nav={false}><p className="p-8 text-center text-muted-foreground">Loading trial…</p></AppShell>;
+  if (!trial) return <AppShell><p className="p-8 text-center text-muted-foreground">This trial is not available in this demo session.</p><Link to="/simulate" className={btn.primary}>Start or resume a trial</Link></AppShell>;
   if (trial.status === "COMPLETED") {
     return <AppShell><div className="p-8 text-center"><p className="font-display text-xl">Trial complete!</p><Link to="/report/$trialId" params={{ trialId }} className={btn.primary + " mt-4"}>View report</Link></div></AppShell>;
   }
@@ -122,28 +132,28 @@ function TrialPage() {
   if (!sc) return <AppShell><p className="p-8 text-center">This trial moment isn't available.</p></AppShell>;
   const s = trial.state;
 
-  const doAction = (id: ActionId, target: Spot) => {
-    const r = applyCareAction(trial, id, `${trial.trialId}:${trial.day}:${trial.stateVersion}:${id}`);
-    if (!r.ok) { toast(r.reason); return; }
-    upsertTrial(r.trial);
-    play(a);
-    setForced(target); setHeart((h) => h + 1);
-    clearTimeout(forceTimer.current);
-    forceTimer.current = setTimeout(() => setForced(null), 3500);
+  const doAction = async (id: ActionId, target: Spot) => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      play(a);
+      await careForTrial(trial, id);
+      setNeedCard(null); setForced(target); setHeart(h => h + 1);
+      clearTimeout(forceTimer.current);
+      forceTimer.current = setTimeout(() => setForced(null), 3500);
+    } catch (error) { toast.error((error as Error).message); }
+    finally { setBusy(false); }
   };
-
   actionRef.current = doAction;
-
   const choose = async (id: ActionId) => {
     if (busy) return;
     setBusy(true);
-    const r = commitDay(trial, id, trial.day);
-    if (!r.ok) { toast(r.reason); setBusy(false); return; }
-    let next = r.trial;
-    if (next.status === "COMPLETED") { next = await finalizeTrial(next); upsertTrial(next); nav({ to: "/report/$trialId", params: { trialId } }); return; }
-    upsertTrial(next);
-    setScenarioOpen(false); setBusy(false);
-    setRecap(next.dayLogs?.[next.dayLogs.length - 1] ?? null);
+    try {
+      const next = await advanceTrial(trial, id);
+      if (next.status === "COMPLETED") { nav({ to: "/report/$trialId", params: { trialId } }); return; }
+      setScenarioOpen(false); setRecap(next.dayLogs?.at(-1) ?? null);
+    } catch (error) { toast.error((error as Error).message); }
+    finally { setBusy(false); }
   };
 
   const cat = SPOTS[spot];
@@ -178,6 +188,15 @@ function TrialPage() {
         <p className="mt-2 text-[10px] text-muted-foreground">Game indices only — simulated, not behavioural measurements.</p>
       </section>
 
+      {needCard && <section role="alert" className="mt-3 rounded-2xl border-2 border-accent bg-warning-soft p-3">
+        <p className="font-display font-semibold">{needCard.title}</p><p className="text-sm">{needCard.body}</p>
+        <button disabled={busy} className={btn.primary + " mt-2"} onClick={() => doAction(needCard.action, needCard.action === "FEED" ? "bowl" : "rug")}>{needCard.action === "FEED" ? "Feed now" : "Give attention"}</button>
+      </section>}
+      <div className="mt-2 flex items-center justify-between gap-2 text-xs text-muted-foreground">
+        <span>Alerts appear here even with sound off.</span>
+        <button className="shrink-0 underline" onClick={() => { const need = attentionNeed(trial, 999)!; setNeedCard(need); play(a); toast(need.title, { description: need.body }); }}>Try pet alert</button>
+      </div>
+
       <section className="relative mt-3 overflow-hidden rounded-3xl shadow-lift" aria-label="Trial room">
         <img src={room} alt="Cozy living room" className="block w-full" width={768} height={960} />
         {pet && (
@@ -193,7 +212,7 @@ function TrialPage() {
           <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-card/95 px-2 py-0.5 text-[10px] font-bold">{cat.label}</span>
         </div>
         {tray.map((t) => (
-          <button key={t.id} onClick={() => doAction(t.id, t.spot)} aria-label={`${t.label} at ${SPOTS[t.spot].label}`}
+          <button key={t.id} disabled={busy} onClick={() => doAction(t.id, t.spot)} aria-label={`${t.label} at ${SPOTS[t.spot].label}`}
             className="absolute size-8 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-card bg-accent/80 text-xs shadow-soft" style={{ left: `${SPOTS[t.spot].x + 5}%`, top: `${SPOTS[t.spot].y - 6}%` }}><t.Icon className="mx-auto size-4 text-accent-foreground" /></button>
         ))}
         <button onClick={() => run(() => setScenarioOpen(true))} className="glass absolute inset-x-3 bottom-3 flex items-center justify-between rounded-2xl p-3 text-left shadow-soft">
@@ -203,10 +222,11 @@ function TrialPage() {
       </section>
 
       <DayNightPane trial={trial} />
+      <PetReaction trial={trial} />
 
       <div className="card-soft mt-3 grid grid-cols-4 gap-2 p-2">
         {tray.map((t) => (
-          <button key={t.id} onClick={() => doAction(t.id, t.spot)} className="flex flex-col items-center gap-1 text-xs font-bold">
+          <button key={t.id} disabled={busy} onClick={() => doAction(t.id, t.spot)} className="flex flex-col items-center gap-1 text-xs font-bold">
             <span className={cn("grid size-14 place-items-center rounded-2xl text-2xl", t.tone)}><t.Icon className="size-6 text-primary" /></span>{t.label}
           </button>
         ))}

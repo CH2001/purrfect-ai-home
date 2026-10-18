@@ -1,12 +1,13 @@
+import { ANIMAL_IMAGES } from "@/lib/data/images";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { BarChart3, CheckCircle2, Info, RotateCcw, Send } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell, Chip, PageHeader, Pips, ProvBadge, SectionTitle, btn } from "@/components/app/shell";
-import { ANIMAL_IMAGES } from "@/lib/data/seed";
-import { activeHousehold, getState, upsertTrial, useAppState } from "@/lib/repo/store";
-import { finalizeTrial } from "@/lib/sim/finalize";
-import { createTrial } from "@/lib/sim/engine";
+
+import { startTrial, useAppState } from "@/lib/repo/store";
+
+
 
 export const Route = createFileRoute("/report/$trialId")({
   head: () => ({
@@ -30,18 +31,16 @@ function ReportPage() {
   const activeVersion = useAppState((s) => s.activeVersionId);
   const nav = useNavigate();
 
-  useEffect(() => { if (trial && trial.status === "COMPLETED" && !trial.report) finalizeTrial(trial).then(upsertTrial); }, [trial]);
+
   if (!trial) return <AppShell><p className="p-8 text-center text-muted-foreground">Loading report…</p></AppShell>;
   if (!trial.report) return <AppShell><p className="p-8 text-center text-muted-foreground">{trial.status === "COMPLETED" ? "Writing your report…" : "This trial isn't finished yet."}</p></AppShell>;
   const r = trial.report;
   const a = trial.snapshot.animal;
   const stale = trial.snapshot.household.versionId !== activeVersion;
 
-  const rerun = () => {
-    // FR-029: new trial with updated profile; old report untouched. Same seed for fair comparison.
-    const t = createTrial(a, activeHousehold(getState()), trial.seed, trial.trialId);
-    upsertTrial(t);
-    nav({ to: "/trials/$trialId", params: { trialId: t.trialId } });
+  const rerun = async () => {
+    try { const trialId = await startTrial(a.animalId, trial.trialId); nav({ to: "/trials/$trialId", params: { trialId } }); }
+    catch (error) { toast.error((error as Error).message); }
   };
 
   return (

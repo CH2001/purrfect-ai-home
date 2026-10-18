@@ -54,11 +54,11 @@ function Review() {
     setChanges(r.map((c) => ({ ...c, accepted: true }))); setBusy(false); setMode("diff");
   };
 
-  const confirm = () => {
+  const confirm = async () => {
     const acc = changes.filter((c) => c.accepted);
     if (!acc.length) { setMode("home"); return; }
     const patch = Object.assign({}, ...acc.map((c) => c.apply));
-    const res = saveHouseholdVersion(patch, "PROFILE_REVIEW", hh.revision); // optimistic concurrency
+    const res = await saveHouseholdVersion(patch, "PROFILE_REVIEW", hh.revision); // optimistic concurrency
     if (!res.ok) { toast.error(res.reason); return; }
     updateReview(reviewed(), "CONFIRMED_CHANGE", { changedFields: acc.map((c) => c.label), versionId: res.version!.versionId });
     toast.success(`Profile updated to ${res.version!.versionId}. Earlier reports keep their original snapshot.`);

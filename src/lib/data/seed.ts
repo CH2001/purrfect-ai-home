@@ -2,17 +2,6 @@
 // Production: these come from Firestore collections `animals`, `households/{id}/versions`,
 // `scenarioTemplates` and `rulesets` via the Cloud Run API (GET /v1/animals etc.).
 import type { Animal, HouseholdVersion, ActionId } from "@/lib/domain/types";
-import oyen from "@/assets/photo-oyen.jpg";
-import luna from "@/assets/photo-luna.jpg";
-import mochi from "@/assets/photo-mochi.jpg";
-import bumi from "@/assets/photo-bumi.jpg";
-import milo from "@/assets/photo-milo.jpg";
-import suri from "@/assets/photo-suri.jpg";
-
-export const ANIMAL_IMAGES: Record<string, string> = {
-  cat_oyen: oyen, cat_luna: luna, cat_mochi: mochi, dog_bumi: bumi, dog_milo: milo, dog_suri: suri,
-};
-
 // Presentation-only SAMPLE directory. Production provider information comes from
 // the shelter/rescuer directory keyed by Animal.shelterId (Firestore via the Cloud
 // Run API). Every name, location and contact detail below is sample data; the UI
@@ -120,7 +109,7 @@ export const ACTION_COPY: Record<ActionId, { title: string; body: string }> = {
 };
 
 export const RULES = {
-  rulesVersion: "1.0.0-demo",
+  rulesVersion: "1.1.0-demo",
   initialState: { hunger: 25, energy: 76, stress: 76, environmentalComfort: 24, humanTrust: 18, curiosity: 38 },
   actions: {
     FEED: { requiredResources: ["FOOD_BOWL"], deltas: { hunger: -25, environmentalComfort: 2 } },

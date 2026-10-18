@@ -74,11 +74,14 @@ export function previewEffects(trial: Trial, actionId: ActionId) {
 
 /** Commit the day's scenario decision and simulate 48 half-hour ticks (idempotent on expectedDay). */
 export function commitDay(trial: Trial, actionId: ActionId, expectedDay: number): ActionResult {
+  if (trial.status !== "IN_PROGRESS") return { ok: false, reason: "This trial is complete.", trial };
   if (trial.day !== expectedDay) return { ok: false, reason: "Day already advanced.", trial };
   const sc = scenarioFor(trial);
   if (!sc) return { ok: false, reason: "No scenario.", trial };
   if (sc.prohibitedActionIds.includes(actionId) || !sc.allowedActionIds.includes(actionId))
     return { ok: false, reason: "That choice isn't safe right now.", trial };
+  const missing = RULES.actions[actionId].requiredResources.filter(resource => !trial.snapshot.household.resources.includes(resource));
+  if (missing.length) return { ok: false, reason: `Missing resource: ${missing.join(", ")}.`, trial };
   const h = trial.snapshot.household;
   const a = trial.snapshot.animal;
   const events: TrialEvent[] = [];
@@ -115,7 +118,8 @@ export function commitDay(trial: Trial, actionId: ActionId, expectedDay: number)
   for (let i = 0; i < 48; i++) {
     let r: number; [r, rng] = rand(rng);
     s = applyDeltas(s, RULES.tickDeltas);
-    if (i % 12 === 0 && h.resources.includes("FOOD_BOWL")) s = applyDeltas(s, { hunger: -18 });
+    // Preserve legacy replay; new trials require actual owner feeding actions.
+    if (trial.rulesVersion === "1.0.0-demo" && i % 12 === 0 && h.resources.includes("FOOD_BOWL")) s = applyDeltas(s, { hunger: -18 });
     if (i % 8 === 0 && retreat) s = applyDeltas(s, RULES.eventDeltas.SAFE_QUIET_TIME);
     if (h.noiseLevel === "HIGH" && r < 0.08 * noiseSens * 2) s = applyDeltas(s, { stress: 1.5 });
     if (r > 0.6) s = applyDeltas(s, { humanTrust: 0.35, curiosity: 0.2 });

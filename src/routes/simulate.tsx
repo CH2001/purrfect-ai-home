@@ -1,7 +1,8 @@
+import { ANIMAL_IMAGES } from "@/lib/data/images";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { AppShell, Logo, Pips, SectionTitle, btn } from "@/components/app/shell";
-import { ANIMAL_IMAGES } from "@/lib/data/seed";
+
 import { useAppState } from "@/lib/repo/store";
 
 export const Route = createFileRoute("/simulate")({

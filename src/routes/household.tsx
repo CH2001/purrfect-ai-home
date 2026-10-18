@@ -61,8 +61,8 @@ function HouseholdPage() {
   const awayDays = DAYS.filter((d) => dayType(h, d).type === "WORK_AWAY");
   const longAbsence = awayDays.length >= 3 && h.caregivers.length === 0;
 
-  const save = () => {
-    const res = saveHouseholdVersion(h, "MANUAL_EDIT", getState().householdVersions.find((v) => v.versionId === getState().activeVersionId)!.revision);
+  const save = async () => {
+    const res = await saveHouseholdVersion(h, "MANUAL_EDIT", getState().householdVersions.find((v) => v.versionId === getState().activeVersionId)!.revision);
     if (!res.ok) { toast.error(res.reason); return; }
     toast.success(`Saved as profile ${res.version!.versionId}. Past reports keep their original snapshot.`);
     nav({ to: "/" });

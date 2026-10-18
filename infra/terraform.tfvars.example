@@ -1,0 +1,9 @@
+project_id         = "your-globally-unique-project-id"
+region             = "asia-southeast1"
+gemini_model_id    = "REPLACE_WITH_MODEL_AVAILABLE_IN_VERTEX_AI"
+vertex_location    = "global"
+deploy_services    = false
+image              = ""
+authorized_domains = ["localhost"]
+# Optional: creates a secret container, never its value. Add version 1 before enabling services.
+# secret_environment = { PARTNER_API_TOKEN = { secret_id = "partner-api-token", version = "1" } }

@@ -1,8 +1,9 @@
+import { ANIMAL_IMAGES } from "@/lib/data/images";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { CheckCircle2, ChevronRight, Clock, FileText, Heart } from "lucide-react";
 import { AppShell, Chip, PageHeader, Pips, SectionTitle, btn } from "@/components/app/shell";
-import { ANIMALS, ANIMAL_IMAGES } from "@/lib/data/seed";
+import { ANIMALS } from "@/lib/data/seed";
 import { useAppState } from "@/lib/repo/store";
 import { cn } from "@/lib/utils";
 import { useFeatureTransition } from "@/components/app/feature-transition";

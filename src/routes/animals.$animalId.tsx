@@ -1,7 +1,8 @@
+import { ANIMAL_IMAGES } from "@/lib/data/images";
 import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 import { Heart, Stethoscope, Home, UserRound, Mail, Phone } from "lucide-react";
 import { AppShell, Chip, DemoBadge, PageHeader, Pips, ProvBadge, SectionTitle, btn } from "@/components/app/shell";
-import { ANIMALS, ANIMAL_IMAGES, ADOPTION_PROVIDERS } from "@/lib/data/seed";
+import { ANIMALS, ADOPTION_PROVIDERS } from "@/lib/data/seed";
 import { toggleFavorite, useAppState } from "@/lib/repo/store";
 import { startTrialFor } from "./discover";
 import { cn } from "@/lib/utils";
@@ -94,7 +95,7 @@ function AnimalPage() {
         <p>Vaccination and sterilisation status: <b>unknown</b>. A vet review is required before adoption.</p>
       </div>
 
-      <button className={btn.primary + " mt-6 w-full"} onClick={() => { const id = startTrialFor(a.animalId); if (id) nav({ to: "/trials/$trialId", params: { trialId: id } }); }}>
+      <button className={btn.primary + " mt-6 w-full"} onClick={async () => { const id = await startTrialFor(a.animalId); if (id) nav({ to: "/trials/$trialId", params: { trialId: id } }); }}>
         Start 7-day trial with {a.name}
       </button>
       <p className="mt-2 text-center text-xs text-muted-foreground">An educational rehearsal — the rescuer always makes the final adoption decision.</p>

@@ -1,0 +1,8 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Browser access is denied. The authenticated API enforces ownership.
+    // Firebase Admin bypasses these rules; its service account has narrowly scoped IAM roles.
+    match /{document=**} { allow read, write: if false; }
+  }
+}

@@ -1,0 +1,14 @@
+.git
+node_modules
+.output
+dist
+.env
+.env.*
+!.env.example
+infra
+coverage
+*.log
+**/*credentials*.json
+**/*service-account*.json
+**/*.pem
+**/*.key

@@ -11,7 +11,10 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "start": "node --env-file-if-exists=.env .output/server/index.mjs",
+    "test:cloud": "firebase emulators:exec --project demo-purrfect-home --only auth,firestore \"node scripts/cloud-smoke.mjs\""
   },
   "overrides": {
     "rolldown": "1.2.1"
@@ -54,6 +57,9 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
+    "firebase": "^13.0.0",
+    "firebase-admin": "^14.5.0",
+    "google-auth-library": "^11.3.1",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.575.0",
     "react": "^19.2.0",
@@ -84,6 +90,7 @@
     "eslint-plugin-prettier": "^5.2.6",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
+    "firebase-tools": "^15.34.0",
     "globals": "^15.15.0",
     "jsdom": "^20.0.3",
     "nitro": "3.0.260603-beta",
@@ -92,5 +99,8 @@
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5",
     "vitest": "^4.1.10"
+  },
+  "engines": {
+    "node": ">=24.12.0"
   }
 }

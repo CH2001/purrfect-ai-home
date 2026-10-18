@@ -1,11 +1,12 @@
+import { ANIMAL_IMAGES } from "@/lib/data/images";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
 import { Heart, X, Home, ShieldCheck, Cat, Dog, PawPrint, Sparkles, Undo2, ArrowLeft, ArrowRight, Check, CircleHelp, TriangleAlert } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell, Chip, Logo, btn } from "@/components/app/shell";
-import { ANIMALS, ANIMAL_IMAGES, ADOPTION_PROVIDERS } from "@/lib/data/seed";
-import { activeHousehold, getState, setState, upsertTrial, useAppState } from "@/lib/repo/store";
-import { createTrial } from "@/lib/sim/engine";
+import { ANIMALS, ADOPTION_PROVIDERS } from "@/lib/data/seed";
+import { activeHousehold, getState, setState, startTrial, useAppState } from "@/lib/repo/store";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { matchHousehold, swipeDecision } from "@/lib/discover-matching";
@@ -25,16 +26,9 @@ export const Route = createFileRoute("/discover")({
   component: Discover,
 });
 
-export function startTrialFor(animalId: string) {
-  const a = ANIMALS.find((x) => x.animalId === animalId);
-  if (!a) { toast.error("This pet listing is unavailable."); return null; }
-  if (a.status !== "APPROVED") { toast.error(`${a.name} is no longer available for trials.`); return null; }
-  const s = getState();
-  const existing = s.trials.find((t) => t.animalId === animalId && t.status === "IN_PROGRESS");
-  if (existing) return existing.trialId;
-  const t = createTrial(a, activeHousehold(s));
-  upsertTrial(t);
-  return t.trialId;
+export async function startTrialFor(animalId: string) {
+  try { return await startTrial(animalId); }
+  catch (error) { toast.error((error as Error).message); return null; }
 }
 
 function Discover() {
@@ -76,7 +70,7 @@ function Discover() {
     }));
     setIdx(last.idx); setLast(null); setDrag(0);
   };
-  const start = () => { if (!a) return; const id = startTrialFor(a.animalId); if (id) nav({ to: "/trials/$trialId", params: { trialId: id } }); };
+  const start = async () => { if (!a) return; const id = await startTrialFor(a.animalId); if (id) nav({ to: "/trials/$trialId", params: { trialId: id } }); };
 
   return (
     <AppShell>
